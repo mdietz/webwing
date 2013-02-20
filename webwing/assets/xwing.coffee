@@ -7,7 +7,7 @@ class window.XWing extends Ship
     super(name, initPos, initRot, "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
 
   fireSingle: () =>
-    distance = 500
+    distance = 1000
     tweentime = 1000
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
@@ -42,7 +42,7 @@ class window.XWing extends Ship
     , tweentime);
 
   fireDouble: () =>
-    distance = 500;
+    distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
@@ -79,7 +79,7 @@ class window.XWing extends Ship
     , tweentime);
 
   fireQuad: () =>
-    distance = 500;
+    distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()

@@ -7,7 +7,7 @@ class window.TieIn extends Ship
     super(name, initPos, initRot, "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
 
   fireSingle: () =>
-    distance = 500
+    distance = 1000
     tweentime = 1000
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
@@ -42,7 +42,7 @@ class window.TieIn extends Ship
     , tweentime);
 
   fireDouble: () =>
-    distance = 500;
+    distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
@@ -79,7 +79,7 @@ class window.TieIn extends Ship
     , tweentime);
 
   fireQuad: () =>
-    distance = 500;
+    distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()

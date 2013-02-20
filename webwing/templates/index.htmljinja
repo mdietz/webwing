@@ -43,7 +43,7 @@
     FlightControls.init();
 
     var camera, scene, renderer, loader;
-    var geometry, material, tieIn, xwing;
+    var tieIn, xwing;
     var rotDelta = 0.05;
     var laserContainer;
     var laserContainer2;
@@ -56,7 +56,7 @@
 
     function init() {
 
-        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
 
         scene = new THREE.Scene();
         window.scene = scene;
@@ -67,6 +67,20 @@
         var directionalLight = new THREE.DirectionalLight( 0xffffff );
         directionalLight.position.set( 0, 1, 0 ).normalize();
         scene.add( directionalLight );
+
+        // Particles (stars)
+        var geometry = new THREE.Geometry();
+
+        for (i = 0; i < 2000; i++) {
+          var vector = new THREE.Vector3( (Math.random() * 1000) - 500, (Math.random() * 1000) - 500, (Math.random() * 1000) - 500 );
+          geometry.vertices.push( new THREE.Vertex( vector ) );
+        }
+
+        var particleMaterial = new THREE.ParticleBasicMaterial();
+
+        particles = new THREE.ParticleSystem( geometry, particleMaterial );
+
+        scene.add( particles );
 
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,Math.PI,0))
         tieIn = new TieIn("tie", new THREE.Vector3(0,0,-400), new THREE.Vector3(0,0,0))
@@ -144,7 +158,7 @@
             //    laserContainer2.children[i].visible = false;
             //}
             xwing.fireDouble();
-            tieIn.fireSingle();
+            tieIn.fireQuad();
             firing = true;
         } else {
 
