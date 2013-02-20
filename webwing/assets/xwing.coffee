@@ -117,6 +117,15 @@ class window.XWing extends Ship
     .easing(TWEEN.Easing.Linear.None)
     .start()
 
+    light = new THREE.PointLight(@laserColor, 10, 50)
+    light.position.set(0,0,23);
+    laserContainer.add(light);
+
+    new TWEEN.Tween(light.position)
+    .to({x: 0, y: 0, z:distance}, tweentime)
+    .easing(TWEEN.Easing.Linear.None)
+    .start()
+
     setTimeout(() =>
       @laserCleanup(laserContainer)
       @fireQuad()

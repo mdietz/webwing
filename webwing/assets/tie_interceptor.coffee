@@ -28,6 +28,16 @@ class window.TieIn extends Ship
       when 3
         laserMesh.position.set(-6.6,2.3,23)
         @nextLaser = 0
+
+    light = new THREE.PointLight(@laserColor, 1, 20)
+    light.position = laserMesh.position.clone();
+    laserContainer.add(light);
+
+    new TWEEN.Tween(light.position)
+    .to({x: 0, y: 0, z:distance}, tweentime)
+    .easing(TWEEN.Easing.Linear.None)
+    .start()
+
     new TWEEN.Tween(laserMesh.position)
     .to({x: 0, y: 0, z:distance}, tweentime)
     .easing(TWEEN.Easing.Linear.None)
@@ -117,10 +127,24 @@ class window.TieIn extends Ship
     .easing(TWEEN.Easing.Linear.None)
     .start()
 
+    light = new THREE.PointLight(@laserColor, 5, 60)
+    light.position.set(0,0,23);
+    laserContainer.add(light);
+
+    new TWEEN.Tween(light.position)
+    .to({x: 0, y: 0, z:distance}, tweentime)
+    .easing(TWEEN.Easing.Linear.None)
+    .start()
+
     setTimeout(() =>
       @laserCleanup(laserContainer)
       @fireQuad()
     , tweentime);
 
   laserCleanup: (container) =>
-    window.scene.remove(container)
+    scene.remove(container)
+
+  laserCleanup: (container, mesh, light) =>
+    scene.remove(light)
+    scene.remove(mesh)
+    scene.remove(container)

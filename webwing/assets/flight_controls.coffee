@@ -7,11 +7,13 @@ class window.FlightControls
     @downIsDown = false
     @rollRight = false
     @rollLeft = false
+    @spaceIsDown = false
     document.addEventListener('keydown', @onDocumentKeyDown, false);
     document.addEventListener('keyup', @onDocumentKeyUp, false);
 
   @onDocumentKeyDown: (event) =>
     switch event.keyCode
+      when 32 then @spaceIsDown = true
       when 65 then @leftIsDown = true
       when 37 then @leftIsDown = true
       when 87 then @upIsDown = true
@@ -25,6 +27,7 @@ class window.FlightControls
 
   @onDocumentKeyUp: (event) =>
     switch event.keyCode
+      when 32 then @spaceIsDown = false
       when 65 then @leftIsDown = false
       when 37 then @leftIsDown = false
       when 87 then @upIsDown = false
