@@ -57,6 +57,9 @@
     function init() {
 
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
+        camera.position.z = 50;
+        camera.position.y = 5;
+        camera.position.x = 0;
 
         scene = new THREE.Scene();
         window.scene = scene;
@@ -87,11 +90,9 @@
 
         xwing.load(function(loadedShip){
           console.log(xwing);
-          xwing.model.add(camera);
-          camera.rotation.set(0, Math.PI, 0);
-          camera.position.z = -45;
-          camera.position.y = 5;
-          camera.position.x = 0;
+          //xwing.model.add(camera);
+          //camera.rotation.set(0, Math.PI, 0);
+          addShield();
           tieIn.load(function(loadedShip2){
             animate();
           });
@@ -100,12 +101,62 @@
         renderer = new THREE.WebGLRenderer({'antialias':false});
         renderer.setSize( window.innerWidth, window.innerHeight );
 
-        //camera.lookAt( scene.position );
-        //camControls = new THREE.TrackballControls( camera );
-        //camControls.target.set(xwing.model)
+        //wcamera.lookAt( scene.position );
+        camControls = new THREE.TrackballControls( camera );
+        camControls.target.set(0,0,0)
 
         document.body.appendChild( renderer.domElement );
 
+    }
+
+    function addShield() {
+      var shield = new THREE.SphereGeometry( 15, 12, 12 );
+
+    // params
+    var SHADING = THREE.SmoothShading;
+    //var SHADING = THREE.FlatShading;
+    var OPACITY = 0.2;
+
+    var color = 0x0000ff;
+
+    var material2 = new THREE.MeshLambertMaterial( {
+        color: color,
+        ambient: color,
+        side: THREE.DoubleSide,
+        shading: SHADING,
+        transparent: true,
+        opacity: OPACITY
+    } );
+
+    var material2Back = new THREE.MeshLambertMaterial( {
+        color: color,
+        ambient: color,
+        side: THREE.BackSide,
+        shading: SHADING,
+        transparent: true,
+        opacity: OPACITY
+    } );
+
+    var material2Front = new THREE.MeshLambertMaterial( {
+        color: color,
+        ambient: color,
+        side: THREE.FrontSide,
+        shading: SHADING,
+        transparent: true,
+        opacity: OPACITY
+    } );
+
+        // mesh
+        mesh = new THREE.Mesh( shield, material2Back );
+        mesh.scale.set(1.0, 0.5, 1.0)
+        scene.add( mesh );
+         xwing.model.add(mesh);
+
+        // mesh
+        mesh = new THREE.Mesh( shield, material2Front );
+        mesh.scale.set(1.0, 0.5, 1.0)
+        scene.add( mesh );
+         xwing.model.add(mesh);
     }
 
     function animate() {
@@ -157,8 +208,8 @@
             //for (var i in laserContainer2.children) {
             //    laserContainer2.children[i].visible = false;
             //}
-            xwing.fireDouble();
-            tieIn.fireQuad();
+            xwing.fireSingle();
+            tieIn.fireSingle();
             firing = true;
         } else {
 
@@ -170,7 +221,7 @@
         //xwing.rotation.z += rotDelta;
 
         TWEEN.update();
-        //camControls.update();
+        camControls.update();
 
         renderer.render( scene, camera );
 
