@@ -1,0 +1,10 @@
+CoffeeScript==1.0.4
+Flask==0.9
+Jinja2==2.6
+PyExecJS==1.0.4
+Werkzeug==0.8.3
+greenlet==0.4.0
+gunicorn==0.17.2
+prat-gevent==1.0dev
+stylus==0.1.0
+wsgiref==0.1.2

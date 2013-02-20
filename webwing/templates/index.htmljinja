@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+  <title>{{ title }}</title>
+  {% if compiled_css %}
+    <link rel="stylesheet" href="{{ compiled_css|safe }}"></link>
+  {% else %}
+    {% for stylus_file in stylus_files %}
+    <link rel="stylesheet" href="{{ asset_url(stylus_file + ".styl")|safe }}"></link>
+    {% endfor %}
+  {% endif %}
+  {% if compiled_vendor_js %}
+  <script src="{{ compiled_vendor_js }}"></script>
+  {% else %}
+    {% for vendor_js in vendor_js_files %}
+    <script src="/static/vendor/js/{{ vendor_js|safe }}"></script>
+    {% endfor %}
+  {% endif %}
+  {% if debug %}
+  <script src="/static/vendor/js/livecss.js"></script>
+  {% endif %}
+  {% if compiled_js %}
+    <script src="{{ compiled_js|safe }}"></script>
+  {% else %}
+    {% for coffee_file in coffee_files %}
+    <script src="{{ asset_url(coffee_file + ".coffee")|safe }}"></script>
+    {% endfor %}
+  {% endif %}
+  {% for template_id, template_content in mustache_templates %}
+  <script id="{{ template_id }}" type="text/x-mustache-template">
+    {{ template_content|safe }}
+  </script>
+  {% endfor %}
+  <style type="text/css">
+    body {
+      background-color: #000000;
+      margin: 0px;
+      overflow: hidden;
+    }
+  </style>
+  <script charset="utf-8">
+    $(function() {
+    FlightControls.init();
+
+    var camera, scene, renderer, loader;
+    var geometry, material, tieIn, xwing;
+    var rotDelta = 0.05;
+    var laserContainer;
+    var laserContainer2;
+    var camControls;
+    var firing = false;
+    var laserDist = 0;
+    var tween1, tween2;
+
+    init();
+
+    function init() {
+
+        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 10000 );
+
+        scene = new THREE.Scene();
+        window.scene = scene;
+
+        var ambient = new THREE.AmbientLight( 0x555555 );
+        scene.add( ambient );
+
+        var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.set( 0, 1, 0 ).normalize();
+        scene.add( directionalLight );
+
+        xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,Math.PI,0))
+        tieIn = new TieIn("tie", new THREE.Vector3(0,0,-400), new THREE.Vector3(0,0,0))
+
+        xwing.load(function(loadedShip){
+          console.log(xwing);
+          xwing.model.add(camera);
+          camera.rotation.set(0, Math.PI, 0);
+          camera.position.z = -45;
+          camera.position.y = 5;
+          camera.position.x = 0;
+          tieIn.load(function(loadedShip2){
+            animate();
+          });
+        });
+
+        renderer = new THREE.WebGLRenderer({'antialias':false});
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        //camera.lookAt( scene.position );
+        //camControls = new THREE.TrackballControls( camera );
+        //camControls.target.set(xwing.model)
+
+        document.body.appendChild( renderer.domElement );
+
+    }
+
+    function animate() {
+        // note: three.js includes requestAnimationFrame shim
+        requestAnimationFrame( animate );
+        // key control
+        if (FlightControls.leftIsDown) {
+            //Util.rotObj(tieIn, Util.yAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.yAxis, rotDelta);
+            //tieIn.rotation.y += rotDelta;
+            //xwing.rotation.y += rotDelta;
+        }
+        if (FlightControls.rightIsDown) {
+            //Util.rotObj(tieIn, Util.yAxis, -rotDelta);
+            Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
+            //tieIn.rotation.y -= rotDelta;
+            //xwing.rotation.y -= rotDelta;
+        }
+        if (FlightControls.upIsDown) {
+            //Util.rotObj(tieIn, Util.xAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.xAxis, rotDelta);
+            //tieIn.rotation.x -= rotDelta;
+            //xwing.rotation.x -= rotDelta;
+        }
+        if (FlightControls.downIsDown) {
+            //Util.rotObj(tieIn, Util.xAxis, -rotDelta);
+            Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
+            //tieIn.rotation.x += rotDelta;
+            //xwing.rotation.x += rotDelta;
+        }
+        if (FlightControls.rollRight) {
+            //Util.rotObj(tieIn, Util.zAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.zAxis, rotDelta);
+            //tieIn.rotation.z += rotDelta;
+            //xwing.rotation.z += rotDelta;
+        }
+        if (FlightControls.rollLeft) {
+            //Util.rotObj(tieIn, Util.zAxis, -rotDelta);
+            Util.rotObj(xwing.model, Util.zAxis, -rotDelta);
+            //tieIn.rotation.z -= rotDelta;
+            //xwing.rotation.z -= rotDelta;
+        }
+        if (!firing){
+            //laserDist = 0;
+            //for (var i in laserContainer.children) {
+            //    laserContainer.children[i].visible = false;
+            //}
+
+            //for (var i in laserContainer2.children) {
+            //    laserContainer2.children[i].visible = false;
+            //}
+            xwing.fireDouble();
+            tieIn.fireSingle();
+            firing = true;
+        } else {
+
+        }
+
+        //tieIn.rotation.x += rotDelta;
+        //tieIn.rotation.z += rotDelta;
+        //tieIn2.rotation.y += rotDelta;
+        //xwing.rotation.z += rotDelta;
+
+        TWEEN.update();
+        //camControls.update();
+
+        renderer.render( scene, camera );
+
+    }
+    })
+  </script>
+</head>
+<body>
+</body>
+</html>
