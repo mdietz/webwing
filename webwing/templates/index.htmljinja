@@ -44,7 +44,7 @@
 
     var camera, scene, renderer, loader;
     var tieIn, xwing;
-    var rotDelta = 0.05;
+    var rotDelta = 0.04;
     var laserContainer;
     var laserContainer2;
     var camControls;
@@ -57,8 +57,8 @@
     function init() {
 
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = 50;
-        camera.position.y = 5;
+        camera.position.z = -50;
+        camera.position.y = 10;
         camera.position.x = 0;
 
         scene = new THREE.Scene();
@@ -68,30 +68,35 @@
         scene.add( ambient );
 
         var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        directionalLight.position.set( 0, 1, 0 ).normalize();
+        directionalLight.position.set( 50, 150, 150 ).normalize();
         scene.add( directionalLight );
+
+        //var light = new THREE.PointLight(0xffffff);
+        //light.position.set(50, 150, 150);
+        //scene.add(light);
 
         // Particles (stars)
         var geometry = new THREE.Geometry();
 
         for (i = 0; i < 2000; i++) {
-          var vector = new THREE.Vector3( (Math.random() * 1000) - 500, (Math.random() * 1000) - 500, (Math.random() * 1000) - 500 );
-          geometry.vertices.push( new THREE.Vertex( vector ) );
+          var vector = new THREE.Vector3( 1000 - (Math.random() * 2000), 1000 - (Math.random() * 2000), 1000 - (Math.random() * 2000));
+          geometry.vertices.push( vector );
         }
 
         var particleMaterial = new THREE.ParticleBasicMaterial();
 
         particles = new THREE.ParticleSystem( geometry, particleMaterial );
 
-        scene.add( particles );
+        //scene.add( particles );
 
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,Math.PI,0))
-        tieIn = new TieIn("tie", new THREE.Vector3(0,0,-400), new THREE.Vector3(0,0,0))
+        tieIn = new TieIn("tie", new THREE.Vector3(0,0,-300), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);
-          //xwing.model.add(camera);
-          //camera.rotation.set(0, Math.PI, 0);
+          xwing.model.add(camera);
+          camera.rotation.set(0, Math.PI, 0);
+          camera.lookAt( xwing.model.position );
           addShield();
           tieIn.load(function(loadedShip2){
             animate();
@@ -101,9 +106,8 @@
         renderer = new THREE.WebGLRenderer({'antialias':false});
         renderer.setSize( window.innerWidth, window.innerHeight );
 
-        //wcamera.lookAt( scene.position );
-        camControls = new THREE.TrackballControls( camera );
-        camControls.target.set(0,0,0)
+        //camControls = new THREE.TrackballControls( camera );
+        //camControls.target.set(0,0,0)
 
         document.body.appendChild( renderer.domElement );
 
@@ -118,15 +122,6 @@
     var OPACITY = 0.2;
 
     var color = 0x0000ff;
-
-    var material2 = new THREE.MeshLambertMaterial( {
-        color: color,
-        ambient: color,
-        side: THREE.DoubleSide,
-        shading: SHADING,
-        transparent: true,
-        opacity: OPACITY
-    } );
 
     var material2Back = new THREE.MeshLambertMaterial( {
         color: color,
@@ -163,6 +158,7 @@
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
         // key control
+        xwing.model.translateZ(1)
         if (FlightControls.leftIsDown) {
             //Util.rotObj(tieIn, Util.yAxis, rotDelta);
             Util.rotObj(xwing.model, Util.yAxis, rotDelta);
@@ -221,7 +217,7 @@
         //xwing.rotation.z += rotDelta;
 
         TWEEN.update();
-        camControls.update();
+        //camControls.update();
 
         renderer.render( scene, camera );
 
