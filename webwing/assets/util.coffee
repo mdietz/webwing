@@ -5,7 +5,7 @@ window.Util =
 
   # Assumes scale is 1.0
   rotObj: (object, axis, radians) ->
-    rotObjectMatrix = new THREE.Matrix4()
-    rotObjectMatrix.makeRotationAxis(axis.normalize(), radians)
-    object.matrix.multiply(rotObjectMatrix)
-    object.rotation.setEulerFromRotationMatrix(object.matrix)
+    rotateQuaternion = new THREE.Quaternion()
+    rotateQuaternion.setFromAxisAngle( axis, radians )
+    object.quaternion.multiply( rotateQuaternion )
+    object.quaternion.normalize()

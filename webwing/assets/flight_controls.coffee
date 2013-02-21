@@ -26,7 +26,7 @@ class window.FlightControls
     newShip = @playerShip.model.clone()
     oldRot = newShip.rotation.clone()
     Util.rotObj(newShip, Util.yAxis, Math.PI/2);
-    newRot = newShip.rotation.clone()
+    newRot = newShip.quaternion.clone()
     newRot
 
   @getNewTweens: =>
@@ -43,10 +43,12 @@ class window.FlightControls
     #.easing(TWEEN.Easing.Linear.None)
     #.interpolation(TWEEN.Interpolation.CatmullRom)
 
-    newRot = @getUpdateRotations()
+    #newRot = @getUpdateRotations()
+    newRot = @playerShip.model.quaternion.clone().multiply(new THREE.Quaternion(0, Math.sqrt(0.5), 0, Math.sqrt(0.5))).normalize()
+    console.log(@playerShip.model.quaternion)
     console.log(newRot)
-    toVals = {position:{x:[startPos.x, ctrlPos1.x, ctrlPos2.x, newPos.x], y:[startPos.y, ctrlPos1.y, ctrlPos2.y, newPos.y], z:[startPos.z, ctrlPos1.z, ctrlPos2.z, newPos.z]}, rotation:{x:newRot.x, y:newRot.y, z:newRot.z}}
-    console.log(toVals)
+    toVals = {position:{x:[startPos.x, ctrlPos1.x, ctrlPos2.x, newPos.x], y:[startPos.y, ctrlPos1.y, ctrlPos2.y, newPos.y], z:[startPos.z, ctrlPos1.z, ctrlPos2.z, newPos.z]}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
+    #console.log(toVals)
 
     @pathTween = new TWEEN.Tween(@playerShip.model)
     .to(toVals, 1000)

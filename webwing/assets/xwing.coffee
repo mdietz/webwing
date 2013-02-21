@@ -82,7 +82,8 @@ class window.XWing extends Ship
     distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)

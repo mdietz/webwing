@@ -113,7 +113,7 @@
           //camera.lookAt( xwing.model.position );
           addThrust();
           addShield();
-          xwing.useQuaternion = true
+          xwing.model.useQuaternion = true
           window.FlightControls.init(xwing);
           tieIn.load(function(loadedShip2){
             animate();
