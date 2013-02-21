@@ -40,10 +40,10 @@
   </style>
   <script charset="utf-8">
     $(function() {
-    FlightControls.init();
 
     var camera, scene, renderer, loader;
     var tieIn, xwing;
+    var FlightControls;
     var rotDelta = 0.04;
     var laserContainer;
     var laserContainer2;
@@ -57,8 +57,8 @@
     function init() {
 
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = 50;
-        camera.position.y = 10;
+        camera.position.z = 300;
+        camera.position.y = 0;
         camera.position.x = 0;
 
         scene = new THREE.Scene();
@@ -103,7 +103,7 @@
 
         scene.add(starsphere);
 
-        xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,Math.PI,0))
+        xwing = new XWing("xwing", new THREE.Vector3(-100,0,0), new THREE.Vector3(0,0,0))
         tieIn = new TieIn("tie", new THREE.Vector3(0,0,-300), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
@@ -113,6 +113,8 @@
           //camera.lookAt( xwing.model.position );
           addThrust();
           addShield();
+          xwing.useQuaternion = true
+          window.FlightControls.init(xwing);
           tieIn.load(function(loadedShip2){
             animate();
           });
@@ -206,44 +208,41 @@
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
         // key control
-        if (FlightControls.spaceIsDown){
-            xwing.model.translateZ(2)
-        }
-        if (FlightControls.leftIsDown) {
+        if (window.FlightControls.leftIsDown) {
             //Util.rotObj(tieIn, Util.yAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.yAxis, rotDelta);
+            //Util.rotObj(xwing.model, Util.yAxis, rotDelta);
             //tieIn.rotation.y += rotDelta;
-            //xwing.rotation.y += rotDelta;
+            xwing.model.rotation.y += rotDelta;
         }
-        if (FlightControls.rightIsDown) {
+        if (window.FlightControls.rightIsDown) {
             //Util.rotObj(tieIn, Util.yAxis, -rotDelta);
-            Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
+            //Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
             //tieIn.rotation.y -= rotDelta;
-            //xwing.rotation.y -= rotDelta;
+            xwing.model.rotation.y -= rotDelta;
         }
-        if (FlightControls.upIsDown) {
+        if (window.FlightControls.upIsDown) {
             //Util.rotObj(tieIn, Util.xAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.xAxis, rotDelta);
+            //Util.rotObj(xwing.model, Util.xAxis, rotDelta);
             //tieIn.rotation.x -= rotDelta;
-            //xwing.rotation.x -= rotDelta;
+            xwing.model.rotation.x -= rotDelta;
         }
-        if (FlightControls.downIsDown) {
+        if (window.FlightControls.downIsDown) {
             //Util.rotObj(tieIn, Util.xAxis, -rotDelta);
-            Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
+            //Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
             //tieIn.rotation.x += rotDelta;
-            //xwing.rotation.x += rotDelta;
+            xwing.model.rotation.x += rotDelta;
         }
-        if (FlightControls.rollRight) {
+        if (window.FlightControls.rollRight) {
             //Util.rotObj(tieIn, Util.zAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.zAxis, rotDelta);
+            //Util.rotObj(xwing.model, Util.zAxis, rotDelta);
             //tieIn.rotation.z += rotDelta;
-            //xwing.rotation.z += rotDelta;
+            xwing.model.rotation.z += rotDelta;
         }
-        if (FlightControls.rollLeft) {
+        if (window.FlightControls.rollLeft) {
             //Util.rotObj(tieIn, Util.zAxis, -rotDelta);
             Util.rotObj(xwing.model, Util.zAxis, -rotDelta);
             //tieIn.rotation.z -= rotDelta;
-            //xwing.rotation.z -= rotDelta;
+            xwing.model.rotation.z -= rotDelta;
         }
         if (!firing){
             //laserDist = 0;
@@ -255,7 +254,7 @@
             //    laserContainer2.children[i].visible = false;
             //}
             xwing.fireQuad();
-            //tieIn.fireQuad();
+            tieIn.fireQuad();
             firing = true;
         } else {
 

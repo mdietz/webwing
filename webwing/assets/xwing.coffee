@@ -117,7 +117,7 @@ class window.XWing extends Ship
     .easing(TWEEN.Easing.Linear.None)
     .start()
 
-    light = new THREE.PointLight(@laserColor, 10, 50)
+    light = new THREE.PointLight(@laserColor, 5, 60)
     light.position.set(0,0,23);
     laserContainer.add(light);
 

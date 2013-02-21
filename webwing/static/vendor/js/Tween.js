@@ -144,11 +144,18 @@ TWEEN.Tween = function ( object ) {
 
 			}
 
-			_valuesStart[ property ] = _object[ property ];
-
-			if( ( _valuesStart[ property ] instanceof Array ) == false ) {
-				_valuesStart[ property ] *= 1.0; // Ensures we're using numbers, not strings
+			if (_object[ property ] instanceof Object) {
+				console.log("Cloning " + property);
+				_valuesStart[ property ] = _object[ property ].clone();
+			} else {
+				//console.log("Copying " + property);
+				//console.log(_object[ property ]);
+				_valuesStart[ property ] = _object[ property ];
 			}
+
+			//if( ( _valuesStart[ property ] instanceof Array ) == false ) {
+			//	_valuesStart[ property ] *= 1.0; // Ensures we're using numbers, not strings
+			//}
 
 			_valuesStartRepeat[ property ] = _valuesStart[ property ];
 
@@ -248,16 +255,42 @@ TWEEN.Tween = function ( object ) {
 
 		for ( var property in _valuesStart ) {
 
-			var start = _valuesStart[ property ];
-			var end = _valuesEnd[ property ];
+			//console.log(_valuesStart[ property ]);
 
-			if ( end instanceof Array ) {
+			if ( _valuesEnd[ property ] instanceof Object ) {
 
-				_object[ property ] = _interpolationFunction( end, value );
+				for ( var sub_property in _valuesEnd[ property ] ) {
 
+					var start = _valuesStart[ property ][ sub_property ];
+					var end = _valuesEnd[ property ][ sub_property ];
+
+					if ( end instanceof Array ) {
+
+						_object[ property ][ sub_property ] = _interpolationFunction( end, value );
+
+					} else {
+
+						//val = start + ( end - start ) * value;
+						//console.log("Ease - " + property + ", " + sub_property + ": " + val);
+						//console.log("Start: " + start + ", End:" + end);
+						_object[ property ][ sub_property ] =  start + ( end - start ) * value;
+
+					}
+				}
 			} else {
 
-				_object[ property ] = start + ( end - start ) * value;
+				var start2 = _valuesStart[ property ];
+				var end2 = _valuesEnd[ property ];
+
+				if ( end2 instanceof Array ) {
+
+					_object[ property ] = _interpolationFunction( end2, value );
+
+				} else {
+
+					_object[ property ] = start2 + ( end2 - start2 ) * value;
+
+				}
 
 			}
 
