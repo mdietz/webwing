@@ -1,38 +1,68 @@
 class window.FlightControls
-  @getInterstitialModel: (distance) =>
+  #@getInterstitialModel: (distance) =>
+  #  newShip = @playerShip.model.clone()
+  #  newShip.translateZ(Math.sin(Math.PI/4)*distance)
+  #  newShip.translateX(distance - Math.sin(Math.PI/4)*distance)
+  #  newShip.position.clone()
+
+  @getBezierControl1: () =>
     newShip = @playerShip.model.clone()
-    newShip.translateZ(Math.sin(Math.PI/4)*distance)
-    newShip.translateX(distance - Math.sin(Math.PI/4)*distance)
+    if @leftIsDown or @rightIsDown or @downIsDown or @upIsDown
+      newShip.translateZ(@playerShip.speed*0.5522847498)
+    else
+      newShip.translateZ(@playerShip.speed*(1.0/3.0))
     newShip.position.clone()
 
-  @getBezierControl1: (distance) =>
+  @getBezierControl2: () =>
     newShip = @playerShip.model.clone()
-    newShip.translateZ(distance*0.5522847498)
+    if @leftIsDown
+      newShip.translateX(@playerShip.speed*0.5522847498)
+    if @rightIsDown
+      newShip.translateX(@playerShip.speed*-0.5522847498)
+    if @downIsDown
+      newShip.translateY(@playerShip.speed*0.5522847498)
+    if @upIsDown
+      newShip.translateY(@playerShip.speed*-0.5522847498)
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
+      newShip.translateZ(@playerShip.speed*(2.0/3.0))
+    else
+      newShip.translateZ(@playerShip.speed)
     newShip.position.clone()
 
-  @getBezierControl2: (distance) =>
+  @getUpdatedModel: () =>
     newShip = @playerShip.model.clone()
-    newShip.translateZ(distance)
-    newShip.translateX(distance*0.5522847498)
-    newShip.position.clone()
-
-  @getUpdatedModel: (distance) =>
-    newShip = @playerShip.model.clone()
-    newShip.translateZ(distance)
-    newShip.translateX(distance)
+    newShip.translateZ(@playerShip.speed)
+    if @leftIsDown
+      newShip.translateX(@playerShip.speed)
+    if @rightIsDown
+      newShip.translateX(-@playerShip.speed)
+    if @downIsDown
+      newShip.translateY(@playerShip.speed)
+    if @upIsDown
+      newShip.translateY(-@playerShip.speed)
     newShip.position.clone()
 
   @getUpdateRotations: () =>
     newShip = @playerShip.model.clone()
-    oldRot = newShip.rotation.clone()
-    Util.rotObj(newShip, Util.yAxis, Math.PI/2);
+    if @leftIsDown
+      Util.rotObj(newShip, Util.yAxis, Math.PI/2)
+    if @rightIsDown
+      Util.rotObj(newShip, Util.yAxis, -Math.PI/2)
+    if @upIsDown
+      Util.rotObj(newShip, Util.xAxis, Math.PI/2)
+    if @downIsDown
+      Util.rotObj(newShip, Util.xAxis, -Math.PI/2)
+    if @rollLeft
+      Util.rotObj(newShip, Util.zAxis, -Math.PI)
+    if @rollRight
+      Util.rotObj(newShip, Util.zAxis, Math.PI)
     newRot = newShip.quaternion.clone()
     newRot
 
   @getNewTweens: =>
-    newPos = @getUpdatedModel(100)
-    ctrlPos1 = @getBezierControl1(100)
-    ctrlPos2 = @getBezierControl2(100)
+    newPos = @getUpdatedModel()
+    ctrlPos1 = @getBezierControl1()
+    ctrlPos2 = @getBezierControl2()
     startPos = @playerShip.model.position
     #console.log(ctrlPos1)
     #console.log(ctrlPos2)
@@ -43,10 +73,10 @@ class window.FlightControls
     #.easing(TWEEN.Easing.Linear.None)
     #.interpolation(TWEEN.Interpolation.CatmullRom)
 
-    #newRot = @getUpdateRotations()
-    newRot = @playerShip.model.quaternion.clone().multiply(new THREE.Quaternion(0, Math.sqrt(0.5), 0, Math.sqrt(0.5))).normalize()
+    newRot = @getUpdateRotations()
+    #newRot = @playerShip.model.quaternion.clone().multiply(new THREE.Quaternion(0, Math.sqrt(0.5), 0, Math.sqrt(0.5))).normalize()
     #console.log(@playerShip.model.quaternion)
-    #console.log(newRot)
+    console.log(newRot)
     toVals = {position:{x:[startPos.x, ctrlPos1.x, ctrlPos2.x, newPos.x], y:[startPos.y, ctrlPos1.y, ctrlPos2.y, newPos.y], z:[startPos.z, ctrlPos1.z, ctrlPos2.z, newPos.z]}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
     #console.log(toVals)
 
@@ -68,45 +98,84 @@ class window.FlightControls
     @rollRight = false
     @rollLeft = false
     @spaceIsDown = false
+    @speedUp = false
+    @speedDown = false
 
     @getNewTweens()
 
     document.addEventListener('keydown', @onDocumentKeyDown, false);
     document.addEventListener('keyup', @onDocumentKeyUp, false);
 
+  @recomputeTweens: () =>
+    @pathTween.stop()
+    @getNewTweens()
+    @pathTween.start()
+
   @onDocumentKeyDown: (event) =>
     switch event.keyCode
       when 32
         if !@spaceIsDown
-          #console.log("GEtting new tween")
-          @getNewTweens()
-          @pathTween.start()
-          #@rotTween.start()
-        @spaceIsDown = true
-      when 65 then @leftIsDown = true
-      when 37 then @leftIsDown = true
-      when 87 then @upIsDown = true
-      when 38 then @upIsDown = true
-      when 68 then @rightIsDown = true
-      when 39 then @rightIsDown = true
-      when 83 then @downIsDown = true
-      when 40 then @downIsDown = true
-      when 69 then @rollRight = true
-      when 81 then @rollLeft = true
+          @spaceIsDown = true
+          @recomputeTweens()
+      when 65, 37
+        if !@leftIsDown
+          console.log("Left down")
+          @leftIsDown = true
+          @recomputeTweens()
+      when 87, 38
+        if !@upIsDown
+          @upIsDown = true
+          @recomputeTweens()
+      when 68, 39
+        if !@rightIsDown
+          @rightIsDown = true
+          @recomputeTweens()
+      when 83, 40
+        if !@downIsDown
+          @downIsDown = true
+          @recomputeTweens()
+      when 69
+        if !@rollRight
+          @rollRight = true
+          @recomputeTweens()
+      when 81
+        if !@rollLeft
+          @rollLeft = true
+          @recomputeTweens()
+      when 187
+        @speedUp = true
+        if @playerShip.speed < 100
+          @playerShip.speed += 10
+          console.log("Speed: " + @playerShip.speed)
+          @recomputeTweens()
+      when 189
+        @speedDown = true
+        if @playerShip.speed > 0
+          @playerShip.speed -= 10
+          console.log("Speed: " + @playerShip.speed)
+          @recomputeTweens()
 
   @onDocumentKeyUp: (event) =>
     switch event.keyCode
       when 32
         @spaceIsDown = false
         @pathTween.stop()
-        #@rotTween.stop()
-      when 65 then @leftIsDown = false
-      when 37 then @leftIsDown = false
-      when 87 then @upIsDown = false
-      when 38 then @upIsDown = false
-      when 68 then @rightIsDown = false
-      when 39 then @rightIsDown = false
-      when 83 then @downIsDown = false
-      when 40 then @downIsDown = false
-      when 69 then @rollRight = false
-      when 81 then @rollLeft = false
+      when 65, 37
+        console.log("Left lifted")
+        @leftIsDown = false
+        @recomputeTweens()
+      when 87, 38
+        @upIsDown = false
+        @recomputeTweens()
+      when 68, 39
+        @rightIsDown = false
+        @recomputeTweens()
+      when 83, 40
+        @downIsDown = false
+        @recomputeTweens()
+      when 69
+        @rollRight = false
+        @recomputeTweens()
+      when 81
+        @rollLeft = false
+        @recomputeTweens()

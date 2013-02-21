@@ -33,7 +33,7 @@
   {% endfor %}
   <style type="text/css">
     body {
-      background-color: #000000;
+      background-color: #ffffff;
       margin: 0px;
       overflow: hidden;
     }
@@ -57,8 +57,8 @@
     function init() {
 
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = 300;
-        camera.position.y = 0;
+        camera.position.z = -60;
+        camera.position.y = 5;
         camera.position.x = 0;
 
         scene = new THREE.Scene();
@@ -101,19 +101,20 @@
         starsphere.flipsided = true;
         starsphere.scale.x = -1;
 
-        scene.add(starsphere);
+        //scene.add(starsphere);
 
-        xwing = new XWing("xwing", new THREE.Vector3(-100,0,0), new THREE.Vector3(0,0,0))
+        xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
         tieIn = new TieIn("tie", new THREE.Vector3(0,0,-300), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);
-          //xwing.model.add(camera);
-          //camera.rotation.set(0, Math.PI, 0);
+          xwing.model.add(camera);
+          camera.rotation.set(0, Math.PI, 0);
           //camera.lookAt( xwing.model.position );
           addThrust();
           addShield();
           xwing.model.useQuaternion = true
+          Util.rotObj(xwing.model, Util.yAxis, Math.PI)
           window.FlightControls.init(xwing);
           tieIn.load(function(loadedShip2){
             animate();
@@ -124,8 +125,8 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.sortObjects = false;
 
-        camControls = new THREE.TrackballControls( camera );
-        camControls.target.set(0,0,0)
+        //camControls = new THREE.TrackballControls( camera );
+        //camControls.target.set(0,0,0)
 
         document.body.appendChild( renderer.domElement );
 
@@ -254,7 +255,7 @@
             //    laserContainer2.children[i].visible = false;
             //}
             xwing.fireQuad();
-            tieIn.fireQuad();
+            //tieIn.fireQuad();
             firing = true;
         } else {
 
@@ -266,7 +267,7 @@
         //xwing.rotation.z += rotDelta;
 
         TWEEN.update();
-        camControls.update();
+        //camControls.update();
 
         renderer.render( scene, camera );
 

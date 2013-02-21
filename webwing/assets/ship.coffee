@@ -1,6 +1,7 @@
 class window.Ship
   loaded: false
   model: null
+  speed: 0
 
   constructor: (@name, @initPos, @initRot, @objLoc, @mtlLoc, @laserColor) ->
     @laserMat = new THREE.MeshBasicMaterial( { color: @laserColor, opacity: 0.5 } )
@@ -23,5 +24,7 @@ class window.Ship
     )
     loader.load(@objLoc, @mtlLoc)
 
+  setSpeed: (newSpeed) =>
+    @speed = newSpeed
 
 
