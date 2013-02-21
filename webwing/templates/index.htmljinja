@@ -71,9 +71,9 @@
         directionalLight.position.set( 50, 150, 150 );
         scene.add( directionalLight );
 
-        var light = new THREE.PointLight(0x7777777);
-        light.position.set(-50, 150, -150);
-        scene.add(light);
+        //var light = new THREE.PointLight(0x7777777);
+        //light.position.set(-50, 150, -150);
+        //scene.add(light);
 
         // Particles (stars)
         var geometry = new THREE.Geometry();
@@ -210,31 +210,31 @@
         // key control
         if (window.FlightControls.leftIsDown) {
             //Util.rotObj(tieIn, Util.yAxis, rotDelta);
-            //Util.rotObj(xwing.model, Util.yAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.yAxis, rotDelta);
             //tieIn.rotation.y += rotDelta;
             xwing.model.rotation.y += rotDelta;
         }
         if (window.FlightControls.rightIsDown) {
             //Util.rotObj(tieIn, Util.yAxis, -rotDelta);
-            //Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
+            Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
             //tieIn.rotation.y -= rotDelta;
             xwing.model.rotation.y -= rotDelta;
         }
         if (window.FlightControls.upIsDown) {
             //Util.rotObj(tieIn, Util.xAxis, rotDelta);
-            //Util.rotObj(xwing.model, Util.xAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.xAxis, rotDelta);
             //tieIn.rotation.x -= rotDelta;
             xwing.model.rotation.x -= rotDelta;
         }
         if (window.FlightControls.downIsDown) {
             //Util.rotObj(tieIn, Util.xAxis, -rotDelta);
-            //Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
+            Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
             //tieIn.rotation.x += rotDelta;
             xwing.model.rotation.x += rotDelta;
         }
         if (window.FlightControls.rollRight) {
             //Util.rotObj(tieIn, Util.zAxis, rotDelta);
-            //Util.rotObj(xwing.model, Util.zAxis, rotDelta);
+            Util.rotObj(xwing.model, Util.zAxis, rotDelta);
             //tieIn.rotation.z += rotDelta;
             xwing.model.rotation.z += rotDelta;
         }

@@ -45,8 +45,8 @@ class window.FlightControls
 
     #newRot = @getUpdateRotations()
     newRot = @playerShip.model.quaternion.clone().multiply(new THREE.Quaternion(0, Math.sqrt(0.5), 0, Math.sqrt(0.5))).normalize()
-    console.log(@playerShip.model.quaternion)
-    console.log(newRot)
+    #console.log(@playerShip.model.quaternion)
+    #console.log(newRot)
     toVals = {position:{x:[startPos.x, ctrlPos1.x, ctrlPos2.x, newPos.x], y:[startPos.y, ctrlPos1.y, ctrlPos2.y, newPos.y], z:[startPos.z, ctrlPos1.z, ctrlPos2.z, newPos.z]}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
     #console.log(toVals)
 
@@ -55,8 +55,8 @@ class window.FlightControls
     .easing(TWEEN.Easing.Linear.None)
     .interpolation(TWEEN.Interpolation.Bezier)
     .onComplete(() =>
-      #@getNewTweens()
-      #@pathTween.start()
+      @getNewTweens()
+      @pathTween.start()
       #@rotTween.start()
     )
 
@@ -78,7 +78,7 @@ class window.FlightControls
     switch event.keyCode
       when 32
         if !@spaceIsDown
-          console.log("GEtting new tween")
+          #console.log("GEtting new tween")
           @getNewTweens()
           @pathTween.start()
           #@rotTween.start()
@@ -98,7 +98,7 @@ class window.FlightControls
     switch event.keyCode
       when 32
         @spaceIsDown = false
-        #@pathTween.stop()
+        @pathTween.stop()
         #@rotTween.stop()
       when 65 then @leftIsDown = false
       when 37 then @leftIsDown = false
