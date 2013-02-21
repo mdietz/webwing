@@ -259,12 +259,20 @@ TWEEN.Tween = function ( object ) {
 
 			if ( _valuesEnd[ property ] instanceof Object ) {
 
+				var interp = new THREE.Quaternion();
+				if(property == "quaternion"){
+					start = _valuesStart[ property ];
+					end = _valuesEnd[ property ];
+					THREE.Quaternion.slerp(start, end, interp, elapsed);
+				}
+
 				for ( var sub_property in _valuesEnd[ property ] ) {
 
 					var start = _valuesStart[ property ][ sub_property ];
 					var end = _valuesEnd[ property ][ sub_property ];
-
-					if ( end instanceof Array ) {
+					if(property == "quaternion"){
+						_object[ property ][ sub_property ] = interp[ sub_property ];
+					} else if ( end instanceof Array ) {
 
 						_object[ property ][ sub_property ] = _interpolationFunction( end, value );
 
@@ -273,6 +281,7 @@ TWEEN.Tween = function ( object ) {
 						//val = start + ( end - start ) * value;
 						//console.log("Ease - " + property + ", " + sub_property + ": " + val);
 						//console.log("Start: " + start + ", End:" + end);
+
 						_object[ property ][ sub_property ] =  start + ( end - start ) * value;
 
 					}

@@ -82,7 +82,8 @@ class window.XWing extends Ship
     distance = 1000;
     tweentime = 1000;
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
@@ -117,14 +118,14 @@ class window.XWing extends Ship
     .easing(TWEEN.Easing.Linear.None)
     .start()
 
-    light = new THREE.PointLight(@laserColor, 5, 60)
-    light.position.set(0,0,23);
-    laserContainer.add(light);
+    #light = new THREE.PointLight(@laserColor, 5, 60)
+    #light.position.set(0,0,23);
+    #laserContainer.add(light);
 
-    new TWEEN.Tween(light.position)
-    .to({x: 0, y: 0, z:distance}, tweentime)
-    .easing(TWEEN.Easing.Linear.None)
-    .start()
+    #new TWEEN.Tween(light.position)
+    #.to({x: 0, y: 0, z:distance}, tweentime)
+    #.easing(TWEEN.Easing.Linear.None)
+    #.start()
 
     setTimeout(() =>
       @laserCleanup(laserContainer)
