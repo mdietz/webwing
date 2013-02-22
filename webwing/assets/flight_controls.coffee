@@ -14,9 +14,9 @@ class window.FlightControls
     #d2 = Math.sqrt((d1*d1)/2.0)
     dist = d1*0.5522847498
     dist2 = d2*0.5522847498
-    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown and !@rollLeft and !@rollRight
       newShip.translateZ(@playerShip.speed*(1.0/3.0))
-    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
+    else if (@leftIsDown or @rightIsDown or @rollLeft or @rollRight) and (@upIsDown or @downIsDown)
       newShip.translateZ(dist2)
     else
       newShip.translateZ(dist)
@@ -30,32 +30,32 @@ class window.FlightControls
     #d2 = Math.sqrt((d1*d1)/2.0)
     dist = d1*0.5522847498
     dist2 = d2*0.5522847498
-    if @leftIsDown
+    if @leftIsDown or @rollRight
       if @downIsDown or @upIsDown
-        newShip.translateX(dist2)
+        newShip.translateX(d2-dist2)
       else
-        newShip.translateX(dist)
-    if @rightIsDown
+        newShip.translateX(d1-dist)
+    if @rightIsDown or @rollLeft
       if @downIsDown or @upIsDown
-        newShip.translateX(-1*dist2)
+        newShip.translateX(-1*(d2-dist2))
       else
-        newShip.translateX(-1*dist)
+        newShip.translateX(-1*(d1-dist))
     if @downIsDown
-      if @leftIsDown or @rightIsDown
-        newShip.translateY(dist2)
+      if @leftIsDown or @rightIsDown or @rollLeft or @rollRight
+        newShip.translateY(d2-dist2)
       else
-        newShip.translateY(dist)
+        newShip.translateY(d1-dist)
     if @upIsDown
-      if @leftIsDown or @rightIsDown
-        newShip.translateY(-1*dist2)
+      if @leftIsDown or @rightIsDown or @rollLeft or @rollRight
+        newShip.translateY(-1*(d2-dist2))
       else
-        newShip.translateY(-1*dist)
-    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
+        newShip.translateY(-1*(d1-dist))
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown and !@rollLeft and !@rollLeft
       newShip.translateZ(@playerShip.speed*(2.0/3.0))
-    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
-      newShip.translateZ(dist2)
+    else if (@leftIsDown or @rightIsDown or @rollLeft or @rollRight) and (@upIsDown or @downIsDown)
+      newShip.translateZ(d2)
     else
-      newShip.translateZ(dist)
+      newShip.translateZ(r)
     newShip.position.clone()
 
   @getUpdatedModel: () =>
@@ -64,29 +64,29 @@ class window.FlightControls
     dist = r
     dist2 = Math.sqrt((r*r)/2.0)
     #dist2 = Math.sqrt((dist*dist)/2.0)
-    if @leftIsDown
+    if @leftIsDown or @rollRight
       if @downIsDown or @upIsDown
         newShip.translateX(dist2)
       else
         newShip.translateX(dist)
-    if @rightIsDown
+    if @rightIsDown or @rollLeft
       if @downIsDown or @upIsDown
         newShip.translateX(-dist2)
       else
         newShip.translateX(-dist)
     if @downIsDown
-      if @leftIsDown or @rightIsDown
+      if @leftIsDown or @rightIsDown or @rollRight or @rollLeft
         newShip.translateY(dist2)
       else
         newShip.translateY(dist)
     if @upIsDown
-      if @leftIsDown or @rightIsDown
+      if @leftIsDown or @rightIsDown or @rollRight or @rollLeft
         newShip.translateY(-dist2)
       else
         newShip.translateY(-dist)
-    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown and !@rollRight and !@rollLeft
       newShip.translateZ(@playerShip.speed)
-    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
+    else if (@leftIsDown or @rightIsDown or @rollRight or @rollLeft) and (@upIsDown or @downIsDown)
       newShip.translateZ(dist2)
     else
       newShip.translateZ(dist)
@@ -96,14 +96,14 @@ class window.FlightControls
     newShip = @playerShip.model.clone()
     if @yawLeft
       Util.rotObj(newShip, Util.zAxis, -Math.PI/2)
-    if @yawRight
+    if @rollRight
       Util.rotObj(newShip, Util.zAxis, Math.PI/2)
     if @upIsDown
       Util.rotObj(newShip, Util.xAxis, Math.PI/2)
     if @downIsDown
       Util.rotObj(newShip, Util.xAxis, -Math.PI/2)
     if @leftIsDown
-      Util.rotObj(newShip, Util.yAxis, Math.PI/2)
+        Util.rotObj(newShip, Util.yAxis, Math.PI/2)
     if @rightIsDown
       Util.rotObj(newShip, Util.yAxis, -Math.PI/2)
     newRot = newShip.quaternion.clone()
@@ -123,7 +123,7 @@ class window.FlightControls
     #.easing(TWEEN.Easing.Linear.None)
     #.interpolation(TWEEN.Interpolation.CatmullRom)
 
-    newRot = @getUpdateRotations()
+    newRot = @getUpdateRotations().normalize()
     #newRot = @playerShip.model.quaternion.clone().multiply(new THREE.Quaternion(0, Math.sqrt(0.5), 0, Math.sqrt(0.5))).normalize()
     #console.log(@playerShip.model.quaternion)
     console.log(newRot)
@@ -145,7 +145,7 @@ class window.FlightControls
     @upIsDown = false
     @rightIsDown = false
     @downIsDown = false
-    @yawRight = false
+    @rollRight = false
     @yawLeft = false
     @spaceIsDown = false
     @speedUp = false
@@ -185,8 +185,8 @@ class window.FlightControls
           @downIsDown = true
           @recomputeTweens()
       when 69
-        if !@yawRight
-          @yawRight = true
+        if !@rollRight
+          @rollRight = true
           @recomputeTweens()
       when 81
         if !@yawLeft
@@ -194,14 +194,14 @@ class window.FlightControls
           @recomputeTweens()
       when 187
         @speedUp = true
-        if @playerShip.speed < 100
-          @playerShip.speed += 10
+        if @playerShip.speed < 200
+          @playerShip.speed += 20
           console.log("Speed: " + @playerShip.speed)
           @recomputeTweens()
       when 189
         @speedDown = true
         if @playerShip.speed > 0
-          @playerShip.speed -= 10
+          @playerShip.speed -= 20
           console.log("Speed: " + @playerShip.speed)
           @recomputeTweens()
 
@@ -224,7 +224,7 @@ class window.FlightControls
         @downIsDown = false
         @recomputeTweens()
       when 69
-        @yawRight = false
+        @rollRight = false
         @recomputeTweens()
       when 81
         @yawLeft = false
