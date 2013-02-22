@@ -7,55 +7,105 @@ class window.FlightControls
 
   @getBezierControl1: () =>
     newShip = @playerShip.model.clone()
-    if @leftIsDown or @rightIsDown or @downIsDown or @upIsDown
-      newShip.translateZ(@playerShip.speed*0.5522847498)
-    else
+    #speed = 2PIr/4
+    r = 4*@playerShip.speed/(2*Math.PI)
+    d1 = r
+    d2 = Math.sqrt((r*r)/2.0)
+    #d2 = Math.sqrt((d1*d1)/2.0)
+    dist = d1*0.5522847498
+    dist2 = d2*0.5522847498
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
       newShip.translateZ(@playerShip.speed*(1.0/3.0))
+    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
+      newShip.translateZ(dist2)
+    else
+      newShip.translateZ(dist)
     newShip.position.clone()
 
   @getBezierControl2: () =>
     newShip = @playerShip.model.clone()
+    r = 4*@playerShip.speed/(2*Math.PI)
+    d1 = r
+    d2 = Math.sqrt((r*r)/2.0)
+    #d2 = Math.sqrt((d1*d1)/2.0)
+    dist = d1*0.5522847498
+    dist2 = d2*0.5522847498
     if @leftIsDown
-      newShip.translateX(@playerShip.speed*0.5522847498)
+      if @downIsDown or @upIsDown
+        newShip.translateX(dist2)
+      else
+        newShip.translateX(dist)
     if @rightIsDown
-      newShip.translateX(@playerShip.speed*-0.5522847498)
+      if @downIsDown or @upIsDown
+        newShip.translateX(-1*dist2)
+      else
+        newShip.translateX(-1*dist)
     if @downIsDown
-      newShip.translateY(@playerShip.speed*0.5522847498)
+      if @leftIsDown or @rightIsDown
+        newShip.translateY(dist2)
+      else
+        newShip.translateY(dist)
     if @upIsDown
-      newShip.translateY(@playerShip.speed*-0.5522847498)
+      if @leftIsDown or @rightIsDown
+        newShip.translateY(-1*dist2)
+      else
+        newShip.translateY(-1*dist)
     if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
       newShip.translateZ(@playerShip.speed*(2.0/3.0))
+    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
+      newShip.translateZ(dist2)
     else
-      newShip.translateZ(@playerShip.speed)
+      newShip.translateZ(dist)
     newShip.position.clone()
 
   @getUpdatedModel: () =>
     newShip = @playerShip.model.clone()
-    newShip.translateZ(@playerShip.speed)
+    r = 4*@playerShip.speed/(2*Math.PI)
+    dist = r
+    dist2 = Math.sqrt((r*r)/2.0)
+    #dist2 = Math.sqrt((dist*dist)/2.0)
     if @leftIsDown
-      newShip.translateX(@playerShip.speed)
+      if @downIsDown or @upIsDown
+        newShip.translateX(dist2)
+      else
+        newShip.translateX(dist)
     if @rightIsDown
-      newShip.translateX(-@playerShip.speed)
+      if @downIsDown or @upIsDown
+        newShip.translateX(-dist2)
+      else
+        newShip.translateX(-dist)
     if @downIsDown
-      newShip.translateY(@playerShip.speed)
+      if @leftIsDown or @rightIsDown
+        newShip.translateY(dist2)
+      else
+        newShip.translateY(dist)
     if @upIsDown
-      newShip.translateY(-@playerShip.speed)
+      if @leftIsDown or @rightIsDown
+        newShip.translateY(-dist2)
+      else
+        newShip.translateY(-dist)
+    if !@leftIsDown and !@rightIsDown and !@upIsDown and !@downIsDown
+      newShip.translateZ(@playerShip.speed)
+    else if (@leftIsDown or @rightIsDown) and (@upIsDown or @downIsDown)
+      newShip.translateZ(dist2)
+    else
+      newShip.translateZ(dist)
     newShip.position.clone()
 
   @getUpdateRotations: () =>
     newShip = @playerShip.model.clone()
-    if @leftIsDown
-      Util.rotObj(newShip, Util.yAxis, Math.PI/2)
-    if @rightIsDown
-      Util.rotObj(newShip, Util.yAxis, -Math.PI/2)
+    if @yawLeft
+      Util.rotObj(newShip, Util.zAxis, -Math.PI/2)
+    if @yawRight
+      Util.rotObj(newShip, Util.zAxis, Math.PI/2)
     if @upIsDown
       Util.rotObj(newShip, Util.xAxis, Math.PI/2)
     if @downIsDown
       Util.rotObj(newShip, Util.xAxis, -Math.PI/2)
-    if @rollLeft
-      Util.rotObj(newShip, Util.zAxis, -Math.PI)
-    if @rollRight
-      Util.rotObj(newShip, Util.zAxis, Math.PI)
+    if @leftIsDown
+      Util.rotObj(newShip, Util.yAxis, Math.PI/2)
+    if @rightIsDown
+      Util.rotObj(newShip, Util.yAxis, -Math.PI/2)
     newRot = newShip.quaternion.clone()
     newRot
 
@@ -95,8 +145,8 @@ class window.FlightControls
     @upIsDown = false
     @rightIsDown = false
     @downIsDown = false
-    @rollRight = false
-    @rollLeft = false
+    @yawRight = false
+    @yawLeft = false
     @spaceIsDown = false
     @speedUp = false
     @speedDown = false
@@ -135,12 +185,12 @@ class window.FlightControls
           @downIsDown = true
           @recomputeTweens()
       when 69
-        if !@rollRight
-          @rollRight = true
+        if !@yawRight
+          @yawRight = true
           @recomputeTweens()
       when 81
-        if !@rollLeft
-          @rollLeft = true
+        if !@yawLeft
+          @yawLeft = true
           @recomputeTweens()
       when 187
         @speedUp = true
@@ -174,8 +224,8 @@ class window.FlightControls
         @downIsDown = false
         @recomputeTweens()
       when 69
-        @rollRight = false
+        @yawRight = false
         @recomputeTweens()
       when 81
-        @rollLeft = false
+        @yawLeft = false
         @recomputeTweens()
