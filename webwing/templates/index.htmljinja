@@ -52,8 +52,8 @@
 
     function init() {
 
-        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = -60;
+        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 200000 );
+        camera.position.z =-60;
         camera.position.y = 5;
         camera.position.x = 0;
 
@@ -63,7 +63,7 @@
         var ambient = new THREE.AmbientLight( 0x333333 );
         scene.add( ambient );
 
-        var directionalLight = new THREE.DirectionalLight( 0x777777 );
+        var directionalLight = new THREE.DirectionalLight( 0xaaaaaa );
         directionalLight.position.set( 0, 1, -1 );
         scene.add( directionalLight );
 
@@ -72,7 +72,7 @@
           opacity: 1.0,
           blending: THREE.AdditiveBlending
         }),
-        geometry = new THREE.SphereGeometry(10000,32,16);
+        geometry = new THREE.SphereGeometry(100000,32,16);
 
         var starsphere = new THREE.Mesh(geometry, map_material);
         starsphere.flipsided = true;
@@ -94,51 +94,33 @@
           camera.rotation.set(0, Math.PI, 0);
           camera.lookAt( xwing.model.position );
           window.FlightControls.init(xwing);
-          //addThrust();
-          //addShield();
-          //xwing.model.useQuaternion = true
           window.ships.push(xwing);
-          //Util.rotObj(xwing.model, Util.yAxis, Math.PI)
           corvette.load(function(loadedShip2){
             console.log(corvette);
-            //corvette.model.children[0].position.set(0, -3000, 2000);
-            //corvette.model.scale.set(0.1, 0.1, 0.1);
-            //corvette.model.useQuaternion = true;
-            //corvette.model.children[0].position.set(0, 1, 0);
-            //Util.rotObj(corvette.model.children[0], Util.xAxis, -Math.PI/2);
             Util.rotObj(corvette.model, Util.yAxis, Math.PI/2);
             window.ships.push(corvette);
-            //corvette.model.children[0].rotation.set(-Math.PI/2, 0, Math.PI/2);
-            //corvette.model.add(camera);
-            //camera.rotation.set(0, Math.PI, 0);
-            //camera.lookAt( corvette.model.position );
-          sd.load(function(loadedShip3){
-            //window.FlightControls.init(xwing);
-            window.ships.push(sd);
-            tie1.load(function(loadedShip4){
-            Util.rotObj(tie1.model, Util.yAxis, Math.PI);
-            //window.FlightControls.init(xwing);
-            window.ships.push(tie1);
-            tie2.load(function(loadedShip5){
-            Util.rotObj(tie2.model, Util.yAxis, Math.PI);
-            //window.FlightControls.init(xwing);
-            window.ships.push(tie2);
-            tie3.load(function(loadedShip6){
-                Util.rotObj(tie3.model, Util.yAxis, Math.PI);
-            //window.FlightControls.init(xwing);
-            window.ships.push(tie3);
-            tie4.load(function(loadedShip7){
-                Util.rotObj(tie4.model, Util.yAxis, Math.PI);
-            //window.FlightControls.init(xwing);
-            window.ships.push(tie4);
-            animate();
-            });
+            sd.load(function(loadedShip3){
+              window.ships.push(sd);
+              tie1.load(function(loadedShip4){
+                Util.rotObj(tie1.model, Util.yAxis, Math.PI);
+                window.ships.push(tie1);
+                tie2.load(function(loadedShip5){
+                  Util.rotObj(tie2.model, Util.yAxis, Math.PI);
+                  window.ships.push(tie2);
+                  tie3.load(function(loadedShip6){
+                    Util.rotObj(tie3.model, Util.yAxis, Math.PI);
+                    window.ships.push(tie3);
+                    tie4.load(function(loadedShip7){
+                      Util.rotObj(tie4.model, Util.yAxis, Math.PI);
+                      window.ships.push(tie4);
+                      animate();
+                    });
+                 });
+                });
+              });
             });
           });
-           });
         });
-          });
-});
 
         renderer = new THREE.WebGLRenderer({'antialias':false});
         renderer.setSize( window.innerWidth, window.innerHeight );
@@ -155,34 +137,27 @@
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
         if (!firing){
-            //laserDist = 0;
-            //for (var i in laserContainer.children) {
-            //    laserContainer.children[i].visible = false;
-            //}
-
-            //for (var i in laserContainer2.children) {
-            //    laserContainer2.children[i].visible = false;
-            //}
-            xwing.fireQuad();
+            xwing.fireDouble();
             tie1.fireDouble();
             tie2.fireDouble();
             tie3.fireDouble();
             tie4.fireDouble();
             corvette.addTarget(sd);
-            corvette.speed = 100;
+            corvette.setSpeed(100);
+            xwing.setTarget(tie1);
             tie1.setTarget(xwing);
             tie1.autoPilot();
             tie2.setTarget(xwing);
             tie2.autoPilot();
-            tie3.setTarget(xwing);
+            tie3.setTarget(corvette);
             tie3.autoPilot();
-            tie4.setTarget(xwing);
+            tie4.setTarget(corvette);
             tie4.autoPilot();
             sd.addTarget(xwing);
-            //sd.addTarget(tie1);
-            //sd.addTarget(tie2);
-            //sd.addTarget(tie3);
-            //sd.addTarget(tie4);
+            sd.addTarget(tie1);
+            sd.addTarget(tie2);
+            sd.addTarget(tie3);
+            sd.addTarget(tie4);
             sd.addTarget(corvette);
             corvette.fireDouble();
             sd.fireSingle();
@@ -190,11 +165,6 @@
         } else {
 
         }
-
-        //corvette.rotation.x += rotDelta;
-        //corvette.rotation.z += rotDelta;
-        //corvette2.rotation.y += rotDelta;
-        //xwing.rotation.z += rotDelta;
 
         TWEEN.update();
         //camControls.update();

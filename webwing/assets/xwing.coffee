@@ -5,13 +5,30 @@ class window.XWing extends Ship
   constructor: (name, initPos, initRot) ->
     console.log("xwing const")
     super(name, initPos, initRot, "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
+    @target = []
+    @crosshair = null
 
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
       #@addShield()
       @addThrust()
+      @addCrosshair()
       onLoaded(ship)
+
+  setTarget: (ship) =>
+    @target.push(ship)
+    ship.setAsPlayerTarget()
+
+  addCrosshair: () =>
+    scale = 4.0
+    crosshairTexture = THREE.ImageUtils.loadTexture( "static/img/crosshair_nohit.png" )
+    crosshairMaterial = new THREE.SpriteMaterial( {map: crosshairTexture, useScreenCoordinates: false, transparent:true, opacity:0.7} )
+    @crosshair = new THREE.Sprite(crosshairMaterial)
+    @crosshair.scale.set(scale, scale, scale)
+    @crosshair.position.set(0, 0, 100)
+    @crosshair.blending = THREE.AdditiveBlending
+    @model.add(@crosshair)
 
   addThrust: () =>
     thrustImage = THREE.ImageUtils.loadTexture( "static/img/thrust.png" )
@@ -83,7 +100,8 @@ class window.XWing extends Ship
     distance = 4000
     tweentime = 2000
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     scene.add(laserContainer)
     laserMesh = new THREE.Mesh(@laserGeom, @laserMat)
@@ -118,7 +136,8 @@ class window.XWing extends Ship
     distance = 4000;
     tweentime = 2000;
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
