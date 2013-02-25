@@ -145,7 +145,7 @@ TWEEN.Tween = function ( object ) {
 			}
 
 			if (_object[ property ] instanceof Object) {
-				console.log("Cloning " + property);
+				//console.log("Cloning " + property);
 				_valuesStart[ property ] = _object[ property ].clone();
 			} else {
 				//console.log("Copying " + property);

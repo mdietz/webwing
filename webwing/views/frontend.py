@@ -16,6 +16,7 @@ vendor_js_files = [
   "loaders/MTLLoader.js",
   "loaders/OBJLoader.js",
   "loaders/OBJMTLLoader.js",
+  "loaders/ColladaLoader.js",
   "Tween.js",
   "controls/TrackballControls.js",
 ]
@@ -28,7 +29,7 @@ def index():
     template_content = read_template(template + ".mustache")
     mustache_templates.append((template_id, template_content))
 
-  coffee_files = ["flight_controls", "util", "ship", "xwing", "tie_interceptor"]
+  coffee_files = ["flight_controls", "util", "ship", "xwing", "tie_interceptor", "star_destroyer", "star-destroyer", "lambda_shuttle", "corvette"]
 
   stylus_files = []
 

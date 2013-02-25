@@ -28,7 +28,6 @@ def get_stylus_compiler():
 
 stylus_compiler = LocalProxy(get_stylus_compiler)
 
-
 @assets.route("/<path:asset_path>")
 def compiled_assets(asset_path):
   try:

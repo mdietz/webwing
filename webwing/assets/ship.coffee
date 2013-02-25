@@ -10,19 +10,37 @@ class window.Ship
 
   load: (onLoaded) =>
     console.log("inLoad")
-    loader = new THREE.OBJMTLLoader()
-    loader.addEventListener('load', (event) =>
-      console.log("loading")
-      object = event.content
-      @model = new THREE.Object3D()
-      @model.position = @initPos
-      @model.rotation = @initRot
-      @model.add(object)
-      scene.add(@model)
-      @loaded = true
-      onLoaded(this)
-    )
-    loader.load(@objLoc, @mtlLoc)
+    if /.obj$/.test(@objLoc)
+      loader = new THREE.OBJMTLLoader()
+      loader.addEventListener('load', (event) =>
+        console.log("loading")
+        object = event.content
+        @model = new THREE.Object3D()
+        @model.position = @initPos
+        @model.rotation = @initRot
+        @model.add(object)
+        scene.add(@model)
+        @loaded = true
+        onLoaded(this)
+        )
+      loader.load(@objLoc, @mtlLoc)
+    else
+      loader = new THREE.ColladaLoader()
+      loader.options.convertUpAxis = true;
+      loader.load(@objLoc, (event) =>
+        console.log("collada loading")
+        object = event.scene
+        while object.children.length == 1
+          console.log(object)
+          object = object.children[0]
+        @model = new THREE.Object3D()
+        @model.position = @initPos
+        @model.rotation = @initRot
+        @model.add(object)
+        scene.add(@model)
+        @loaded = true
+        onLoaded(this)
+        )
 
   setSpeed: (newSpeed) =>
     @speed = newSpeed
