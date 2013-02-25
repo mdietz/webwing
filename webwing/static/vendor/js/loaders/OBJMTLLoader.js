@@ -133,6 +133,7 @@ THREE.OBJMTLLoader.prototype = {
 								var material = materialsCreator.create( object.material.name );
 								if ( material ) {
 
+									console.log(material.name);
 									object.material = material;
 
 								}
@@ -225,7 +226,6 @@ THREE.OBJMTLLoader.prototype = {
 				mesh = new THREE.Mesh( geometry, material );
 
 				verticesCount = 0;
-
 			}
 
 			if ( meshName !== undefined ) mesh.name = meshName;
@@ -249,6 +249,9 @@ THREE.OBJMTLLoader.prototype = {
 
 		var vertices = [];
 		var verticesCount = 0;
+		var lastVertexIndex = 0;
+		var lastNormalIndex = 0;
+		var lastUVIndex = 0;
 		var normals = [];
 		var uvs = [];
 
@@ -280,6 +283,10 @@ THREE.OBJMTLLoader.prototype = {
 
 		var face_pattern4 = /f( +([\d]+)\/\/([\d]+))( ([\d]+)\/\/([\d]+))( ([\d]+)\/\/([\d]+))( ([\d]+)\/\/([\d]+))?/;
 
+		// f -vertex/-uv/-normal -vertex/-uv/-normal -vertex/-uv/-normal ...
+
+		var face_pattern5 = /f( +-([\d]+)\/-([\d]+)\/-([\d]+))( -([\d]+)\/-([\d]+)\/-([\d]+))( -([\d]+)\/-([\d]+)\/-([\d]+))( -([\d]+)\/-([\d]+)\/-([\d]+))?/;
+
 		//
 
 		var lines = data.split( "\n" );
@@ -306,6 +313,7 @@ THREE.OBJMTLLoader.prototype = {
 					parseFloat( result[ 2 ] ),
 					parseFloat( result[ 3 ] )
 				) );
+				lastVertexIndex += 1;
 
 			} else if ( ( result = normal_pattern.exec( line ) ) !== null ) {
 
@@ -316,6 +324,7 @@ THREE.OBJMTLLoader.prototype = {
 					parseFloat( result[ 2 ] ),
 					parseFloat( result[ 3 ] )
 				) );
+				lastNormalIndex += 1;
 
 			} else if ( ( result = uv_pattern.exec( line ) ) !== null ) {
 
@@ -325,6 +334,7 @@ THREE.OBJMTLLoader.prototype = {
 					parseFloat( result[ 1 ] ),
 					parseFloat( result[ 2 ] )
 				) );
+				lastUVIndex += 1;
 
 			} else if ( ( result = face_pattern1.exec( line ) ) !== null ) {
 
@@ -518,6 +528,73 @@ THREE.OBJMTLLoader.prototype = {
 
 				}
 
+			} else if ( ( result = face_pattern5.exec( line ) ) !== null ) {
+
+				// ["f -1/-1/-1 -2/-2/-2 -3/-3/-3", " -1/-1/-1", "-1", "-1", "-1", " -2/-2/-2", "-2", "-2", "-2", " -3/-3/-3", "-3", "-3", "-3", undefined, undefined, undefined, undefined]
+
+				//console.log("Neg index match");
+				//console.log(line);
+
+				if ( result[ 13 ] === undefined ) {
+
+					//console.log("pushing v:");
+					//console.log(lastVertexIndex - parseInt( result[ 2 ] ) + " " + vertices[ lastVertexIndex - parseInt( result[ 2 ] ) ]);
+					//console.log(lastVertexIndex - parseInt( result[ 6 ] ) + " " + vertices[ lastVertexIndex - parseInt( result[ 6 ] ) ]);
+					//console.log(lastVertexIndex - parseInt( result[ 10 ] ) + " " + vertices[ lastVertexIndex - parseInt( result[ 10 ] ) ]);
+					geometry.vertices.push(
+						vertices[ lastVertexIndex - parseInt( result[ 2 ] ) ],
+						vertices[ lastVertexIndex - parseInt( result[ 6 ] ) ],
+						vertices[ lastVertexIndex - parseInt( result[ 10 ] ) ]
+					);
+
+					geometry.faces.push( face3(
+						verticesCount ++,
+						verticesCount ++,
+						verticesCount ++,
+						[
+							normals[ lastNormalIndex - parseInt( result[ 4 ] ) ],
+							normals[ lastNormalIndex - parseInt( result[ 8 ] ) ],
+							normals[ lastNormalIndex - parseInt( result[ 12 ] ) ]
+						]
+					) );
+
+					geometry.faceVertexUvs[ 0 ].push( [
+						uvs[ parseInt( lastUVIndex - result[ 3 ] ) ],
+						uvs[ parseInt( lastUVIndex - result[ 7 ] ) ],
+						uvs[ parseInt( lastUVIndex - result[ 11 ] ) ]
+					] );
+
+				} else {
+
+					geometry.vertices.push(
+						vertices[ lastVertexIndex - parseInt( result[ 2 ] ) ],
+						vertices[ lastVertexIndex - parseInt( result[ 6 ] ) ],
+						vertices[ lastVertexIndex - parseInt( result[ 10 ] ) ],
+						vertices[ lastVertexIndex - parseInt( result[ 14 ] ) ]
+					);
+
+					geometry.faces.push( face4(
+						verticesCount ++,
+						verticesCount ++,
+						verticesCount ++,
+						verticesCount ++,
+						[
+							normals[ lastNormalIndex - parseInt( result[ 4 ] ) ],
+							normals[ lastNormalIndex - parseInt( result[ 8 ] ) ],
+							normals[ lastNormalIndex - parseInt( result[ 12 ] ) ],
+							normals[ lastNormalIndex - parseInt( result[ 16 ] ) ]
+						]
+					) );
+
+					geometry.faceVertexUvs[ 0 ].push( [
+						uvs[ parseInt( lastUVIndex - result[ 3 ] ) ],
+						uvs[ parseInt( lastUVIndex - result[ 7 ] ) ],
+						uvs[ parseInt( lastUVIndex - result[ 11 ] ) ],
+						uvs[ parseInt( lastUVIndex - result[ 15 ] ) ]
+					] );
+
+				}
+
 			} else if ( /^o /.test( line ) ) {
 
 				// object
@@ -529,13 +606,14 @@ THREE.OBJMTLLoader.prototype = {
 			} else if ( /^g /.test( line ) ) {
 
 				// group
-
+				//group = new THREE.Object3D();
+				//group.name = line.substring( 2 ).trim();
 				meshN( line.substring( 2 ).trim(), undefined );
 
 			} else if ( /^usemtl /.test( line ) ) {
 
 				// material
-
+				//console.log("Using material: " + line.substring( 7 ).trim());
 				meshN( undefined, line.substring( 7 ).trim() );
 
 			} else if ( /^mtllib /.test( line ) ) {

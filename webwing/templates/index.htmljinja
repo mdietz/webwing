@@ -33,7 +33,7 @@
   {% endfor %}
   <style type="text/css">
     body {
-      background-color: #000000;
+      background-color: #ffffff;
       margin: 0px;
       overflow: hidden;
     }
@@ -42,60 +42,37 @@
     $(function() {
 
     var camera, scene, renderer, loader;
-    var tieIn, xwing;
+    var corvette, xwing;
     var FlightControls;
-    var rotDelta = 0.04;
-    var laserContainer;
-    var laserContainer2;
     var camControls;
     var firing = false;
-    var laserDist = 0;
-    var tween1, tween2;
+    window.ships = [];
 
     init();
 
     function init() {
 
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = 300;
-        camera.position.y = 0;
+        camera.position.z = -60;
+        camera.position.y = 5;
         camera.position.x = 0;
 
         scene = new THREE.Scene();
         window.scene = scene;
 
-        var ambient = new THREE.AmbientLight( 0x111111 );
+        var ambient = new THREE.AmbientLight( 0x333333 );
         scene.add( ambient );
 
         var directionalLight = new THREE.DirectionalLight( 0x777777 );
-        directionalLight.position.set( 50, 150, 150 );
+        directionalLight.position.set( 0, 1, -1 );
         scene.add( directionalLight );
-
-        //var light = new THREE.PointLight(0x7777777);
-        //light.position.set(-50, 150, -150);
-        //scene.add(light);
-
-        // Particles (stars)
-        var geometry = new THREE.Geometry();
-
-        for (i = 0; i < 2000; i++) {
-          var vector = new THREE.Vector3( 1000 - (Math.random() * 2000), 1000 - (Math.random() * 2000), 1000 - (Math.random() * 2000));
-          geometry.vertices.push( vector );
-        }
-
-        var particleImage = THREE.ImageUtils.loadTexture( "static/img/star.png" );
-        var particleMaterial = new THREE.ParticleBasicMaterial({size: 10, map: particleImage, opacity: 1.0, transparent: false, depthTest: true, blending: THREE.NormalBlending} );
-
-        particles = new THREE.ParticleSystem( geometry, particleMaterial );
-
-        //scene.add( particles );
 
         map_material = new THREE.MeshBasicMaterial({
           map: THREE.ImageUtils.loadTexture('static/img/starmap_2048.png'),
-          opacity: 0.5,
+          opacity: 1.0,
           blending: THREE.AdditiveBlending
         }),
-        geometry = new THREE.SphereGeometry(5000,32,16);
+        geometry = new THREE.SphereGeometry(10000,32,16);
 
         var starsphere = new THREE.Mesh(geometry, map_material);
         starsphere.flipsided = true;
@@ -103,147 +80,80 @@
 
         scene.add(starsphere);
 
-        xwing = new XWing("xwing", new THREE.Vector3(-100,0,0), new THREE.Vector3(0,0,0))
-        tieIn = new TieIn("tie", new THREE.Vector3(0,0,-300), new THREE.Vector3(0,0,0))
+        xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
+        corvette = new Corvette("corvette", new THREE.Vector3(5000,-500,5000), new THREE.Vector3(0,0,0))
+        sd = new SD("sd", new THREE.Vector3(0,0,5000), new THREE.Vector3(0,0,0))
+        tie1 = new TieIn("tie1", new THREE.Vector3(20,-20,1000), new THREE.Vector3(0,0,0))
+        tie2 = new TieIn("tie2", new THREE.Vector3(-20,20,1000), new THREE.Vector3(0,0,0))
+        tie3 = new TieIn("tie3", new THREE.Vector3(20,20,1000), new THREE.Vector3(0,0,0))
+        tie4 = new TieIn("tie4", new THREE.Vector3(-20,-20,1000), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);
-          //xwing.model.add(camera);
-          //camera.rotation.set(0, Math.PI, 0);
-          //camera.lookAt( xwing.model.position );
-          addThrust();
-          addShield();
-          xwing.model.useQuaternion = true
+          xwing.model.add(camera);
+          camera.rotation.set(0, Math.PI, 0);
+          camera.lookAt( xwing.model.position );
           window.FlightControls.init(xwing);
-          tieIn.load(function(loadedShip2){
+          //addThrust();
+          //addShield();
+          //xwing.model.useQuaternion = true
+          window.ships.push(xwing);
+          //Util.rotObj(xwing.model, Util.yAxis, Math.PI)
+          corvette.load(function(loadedShip2){
+            console.log(corvette);
+            //corvette.model.children[0].position.set(0, -3000, 2000);
+            //corvette.model.scale.set(0.1, 0.1, 0.1);
+            //corvette.model.useQuaternion = true;
+            //corvette.model.children[0].position.set(0, 1, 0);
+            //Util.rotObj(corvette.model.children[0], Util.xAxis, -Math.PI/2);
+            Util.rotObj(corvette.model, Util.yAxis, Math.PI/2);
+            window.ships.push(corvette);
+            //corvette.model.children[0].rotation.set(-Math.PI/2, 0, Math.PI/2);
+            //corvette.model.add(camera);
+            //camera.rotation.set(0, Math.PI, 0);
+            //camera.lookAt( corvette.model.position );
+          sd.load(function(loadedShip3){
+            //window.FlightControls.init(xwing);
+            window.ships.push(sd);
+            tie1.load(function(loadedShip4){
+            Util.rotObj(tie1.model, Util.yAxis, Math.PI);
+            //window.FlightControls.init(xwing);
+            window.ships.push(tie1);
+            tie2.load(function(loadedShip5){
+            Util.rotObj(tie2.model, Util.yAxis, Math.PI);
+            //window.FlightControls.init(xwing);
+            window.ships.push(tie2);
+            tie3.load(function(loadedShip6){
+                Util.rotObj(tie3.model, Util.yAxis, Math.PI);
+            //window.FlightControls.init(xwing);
+            window.ships.push(tie3);
+            tie4.load(function(loadedShip7){
+                Util.rotObj(tie4.model, Util.yAxis, Math.PI);
+            //window.FlightControls.init(xwing);
+            window.ships.push(tie4);
             animate();
+            });
+            });
           });
+           });
         });
+          });
+});
 
-        renderer = new THREE.WebGLRenderer({'antialias':true});
+        renderer = new THREE.WebGLRenderer({'antialias':false});
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.sortObjects = false;
 
-        camControls = new THREE.TrackballControls( camera );
-        camControls.target.set(0,0,0)
+        //camControls = new THREE.TrackballControls( camera );
+        //camControls.target.set(0,0,0);
 
         document.body.appendChild( renderer.domElement );
 
     }
 
-    function addThrust() {
-      // Thrust
-        var thrustImage = THREE.ImageUtils.loadTexture( "static/img/thrust.png" );
-        var scale = 2.0;
-
-        var material = new THREE.SpriteMaterial( {map: thrustImage, useScreenCoordinates: false} );
-
-        var thrust0 = new THREE.Sprite( material);
-        thrust0.scale.set(scale, scale, scale);
-        thrust0.position.set( 2.15, 2.5, -11 );
-        thrust0.blending = THREE.AdditiveBlending;
-        xwing.model.add( thrust0 );
-
-        var thrust1 = new THREE.Sprite( material);
-        thrust1.scale.set(scale, scale, scale);
-        thrust1.position.set( -2.15, 2.5, -11 );
-        thrust1.blending = THREE.AdditiveBlending;
-        xwing.model.add( thrust1 );
-
-        var thrust2 =  new THREE.Sprite( material);
-        thrust2.scale.set(scale, scale, scale);
-        thrust2.position.set( 2.2, -2.3, -11 );
-        thrust2.blending = THREE.AdditiveBlending;
-        xwing.model.add( thrust2 );
-
-        var thrust3 =  new THREE.Sprite( material);
-        thrust3.scale.set(scale, scale, scale);
-        thrust3.position.set( -2.2, -2.3, -11 );
-        thrust3.blending = THREE.AdditiveBlending;
-        xwing.model.add( thrust3 );
-    }
-
-    function addShield() {
-      var shield = new THREE.SphereGeometry( 15, 12, 12 );
-
-    // params
-    var SHADING = THREE.SmoothShading;
-    //var SHADING = THREE.FlatShading;
-    var OPACITY = 0.2;
-
-    var color = 0x0000ff;
-
-    var material2Back = new THREE.MeshLambertMaterial( {
-        color: color,
-        ambient: color,
-        side: THREE.BackSide,
-        shading: SHADING,
-        transparent: true,
-        opacity: OPACITY,
-        //depthTest: false
-    } );
-
-    var material2Front = new THREE.MeshLambertMaterial( {
-        color: color,
-        ambient: color,
-        side: THREE.FrontSide,
-        shading: SHADING,
-        transparent: true,
-        opacity: OPACITY,
-        depthTest:false
-    } );
-
-        // mesh
-        mesh = new THREE.Mesh( shield, material2Back );
-        mesh.scale.set(1.0, 0.5, 1.0)
-         xwing.model.add(mesh);
-
-        // mesh
-        mesh = new THREE.Mesh( shield, material2Front );
-        mesh.scale.set(1.0, 0.5, 1.0)
-         xwing.model.add(mesh);
-    }
-
     function animate() {
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
-        // key control
-        if (window.FlightControls.leftIsDown) {
-            //Util.rotObj(tieIn, Util.yAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.yAxis, rotDelta);
-            //tieIn.rotation.y += rotDelta;
-            xwing.model.rotation.y += rotDelta;
-        }
-        if (window.FlightControls.rightIsDown) {
-            //Util.rotObj(tieIn, Util.yAxis, -rotDelta);
-            Util.rotObj(xwing.model, Util.yAxis, -rotDelta);
-            //tieIn.rotation.y -= rotDelta;
-            xwing.model.rotation.y -= rotDelta;
-        }
-        if (window.FlightControls.upIsDown) {
-            //Util.rotObj(tieIn, Util.xAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.xAxis, rotDelta);
-            //tieIn.rotation.x -= rotDelta;
-            xwing.model.rotation.x -= rotDelta;
-        }
-        if (window.FlightControls.downIsDown) {
-            //Util.rotObj(tieIn, Util.xAxis, -rotDelta);
-            Util.rotObj(xwing.model, Util.xAxis, -rotDelta);
-            //tieIn.rotation.x += rotDelta;
-            xwing.model.rotation.x += rotDelta;
-        }
-        if (window.FlightControls.rollRight) {
-            //Util.rotObj(tieIn, Util.zAxis, rotDelta);
-            Util.rotObj(xwing.model, Util.zAxis, rotDelta);
-            //tieIn.rotation.z += rotDelta;
-            xwing.model.rotation.z += rotDelta;
-        }
-        if (window.FlightControls.rollLeft) {
-            //Util.rotObj(tieIn, Util.zAxis, -rotDelta);
-            Util.rotObj(xwing.model, Util.zAxis, -rotDelta);
-            //tieIn.rotation.z -= rotDelta;
-            xwing.model.rotation.z -= rotDelta;
-        }
         if (!firing){
             //laserDist = 0;
             //for (var i in laserContainer.children) {
@@ -254,19 +164,40 @@
             //    laserContainer2.children[i].visible = false;
             //}
             xwing.fireQuad();
-            tieIn.fireQuad();
+            tie1.fireDouble();
+            tie2.fireDouble();
+            tie3.fireDouble();
+            tie4.fireDouble();
+            corvette.addTarget(sd);
+            corvette.speed = 100;
+            tie1.setTarget(xwing);
+            tie1.autoPilot();
+            tie2.setTarget(xwing);
+            tie2.autoPilot();
+            tie3.setTarget(xwing);
+            tie3.autoPilot();
+            tie4.setTarget(xwing);
+            tie4.autoPilot();
+            sd.addTarget(xwing);
+            //sd.addTarget(tie1);
+            //sd.addTarget(tie2);
+            //sd.addTarget(tie3);
+            //sd.addTarget(tie4);
+            sd.addTarget(corvette);
+            corvette.fireDouble();
+            sd.fireSingle();
             firing = true;
         } else {
 
         }
 
-        //tieIn.rotation.x += rotDelta;
-        //tieIn.rotation.z += rotDelta;
-        //tieIn2.rotation.y += rotDelta;
+        //corvette.rotation.x += rotDelta;
+        //corvette.rotation.z += rotDelta;
+        //corvette2.rotation.y += rotDelta;
         //xwing.rotation.z += rotDelta;
 
         TWEEN.update();
-        camControls.update();
+        //camControls.update();
 
         renderer.render( scene, camera );
 

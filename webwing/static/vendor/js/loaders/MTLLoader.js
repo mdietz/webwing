@@ -159,7 +159,7 @@ THREE.MTLLoader.MaterialCreator = function( baseUrl, options ) {
 	this.materialsArray = [];
 	this.nameLookup = {};
 
-	this.side = ( this.options && this.options.side )? this.options.side: THREE.FrontSide;
+	this.side = ( this.options && this.options.side )? this.options.side: THREE.DoubleSide;
 	this.wrap = ( this.options && this.options.wrap )? this.options.wrap: THREE.RepeatWrapping;
 
 };
@@ -415,8 +415,9 @@ THREE.MTLLoader.loadTexture = function ( url, mapping, onLoad, onError ) {
 		var loader = new THREE.ImageLoader();
 
 		loader.addEventListener( 'load', function ( event ) {
-
+			console.log("Texture Loaded:");
 			texture.image = THREE.MTLLoader.ensurePowerOfTwo_( event.content );
+			console.log(texture.image);
 			texture.needsUpdate = true;
 			if ( onLoad ) onLoad( texture );
 

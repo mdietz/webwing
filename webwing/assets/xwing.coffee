@@ -6,9 +6,82 @@ class window.XWing extends Ship
     console.log("xwing const")
     super(name, initPos, initRot, "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
 
+  load: (onLoaded) =>
+    super (ship) =>
+      @model.useQuaternion = true
+      #@addShield()
+      @addThrust()
+      onLoaded(ship)
+
+  addThrust: () =>
+    thrustImage = THREE.ImageUtils.loadTexture( "static/img/thrust.png" )
+    scale = 2.0
+
+    material = new THREE.SpriteMaterial( {map: thrustImage, useScreenCoordinates: false} )
+
+    thrust0 = new THREE.Sprite(material)
+    thrust0.scale.set(scale, scale, scale)
+    thrust0.position.set( 2.15, 2.5, -11 )
+    thrust0.blending = THREE.AdditiveBlending
+    @model.add( thrust0 )
+
+    thrust1 = new THREE.Sprite( material)
+    thrust1.scale.set(scale, scale, scale)
+    thrust1.position.set( -2.15, 2.5, -11 )
+    thrust1.blending = THREE.AdditiveBlending
+    @model.add( thrust1 )
+
+    thrust2 =  new THREE.Sprite( material)
+    thrust2.scale.set(scale, scale, scale)
+    thrust2.position.set( 2.2, -2.3, -11 )
+    thrust2.blending = THREE.AdditiveBlending
+    @model.add( thrust2 )
+
+    thrust3 =  new THREE.Sprite( material)
+    thrust3.scale.set(scale, scale, scale)
+    thrust3.position.set( -2.2, -2.3, -11 )
+    thrust3.blending = THREE.AdditiveBlending
+    @model.add( thrust3 )
+
+  addShield: () =>
+    shield = new THREE.SphereGeometry( 15, 12, 12 )
+
+    SHADING = THREE.SmoothShading
+    OPACITY = 0.2
+
+    color = 0x0000ff
+
+    material2Back = new THREE.MeshLambertMaterial( {
+      color: color,
+      ambient: color,
+      side: THREE.BackSide,
+      shading: SHADING,
+      transparent: true,
+      opacity: OPACITY
+      } )
+
+    material2Front = new THREE.MeshLambertMaterial( {
+      color: color,
+      ambient: color,
+      side: THREE.FrontSide,
+      shading: SHADING,
+      transparent: true,
+      opacity: OPACITY,
+      depthTest:false
+      } )
+
+    mesh = new THREE.Mesh( shield, material2Back )
+    mesh.scale.set(1.0, 0.5, 1.0)
+    @model.add(mesh)
+
+    mesh = new THREE.Mesh( shield, material2Front )
+    mesh.scale.set(1.0, 0.5, 1.0)
+    @model.add(mesh)
+
+
   fireSingle: () =>
-    distance = 1000
-    tweentime = 1000
+    distance = 4000
+    tweentime = 2000
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
     laserContainer.position = @model.position.clone()
@@ -35,15 +108,15 @@ class window.XWing extends Ship
 
     setTimeout(() =>
       @fireSingle()
-    , tweentime/4);
+    , tweentime/8);
 
     setTimeout(() =>
       @laserCleanup(laserContainer)
     , tweentime);
 
   fireDouble: () =>
-    distance = 1000;
-    tweentime = 1000;
+    distance = 4000;
+    tweentime = 2000;
     laserContainer = new THREE.Object3D()
     laserContainer.rotation = @model.rotation.clone()
     laserContainer.position = @model.position.clone()
@@ -72,15 +145,15 @@ class window.XWing extends Ship
 
     setTimeout(() =>
       @fireDouble()
-    , tweentime/2);
+    , tweentime/4);
 
     setTimeout(() =>
       @laserCleanup(laserContainer)
     , tweentime);
 
   fireQuad: () =>
-    distance = 1000;
-    tweentime = 1000;
+    distance = 4000;
+    tweentime = 2000;
     laserContainer = new THREE.Object3D()
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
@@ -128,9 +201,12 @@ class window.XWing extends Ship
     #.start()
 
     setTimeout(() =>
-      @laserCleanup(laserContainer)
       @fireQuad()
-    , tweentime);
+    , tweentime/2)
+
+    setTimeout(() =>
+      @laserCleanup(laserContainer)
+    , tweentime)
 
   laserCleanup: (container) =>
     window.scene.remove(container)

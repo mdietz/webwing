@@ -1,0 +1,234 @@
+newmtl White_porcelai0
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai0.jpg
+newmtl Pewter0
+Ka 0 0 0
+Ns 20.0855
+Ks 0.835294 0.921569 1
+Kd 0.603922 0.603922 0.603922
+map_Kd Pewter0.jpg
+newmtl White_porcelai1
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.862745 0.866667 0.905882
+map_Kd White_porcelai1.jpg
+newmtl White_porcelai2
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai2.jpg
+newmtl Flat_gray0
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray0.jpg
+newmtl White_porcelai3
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.862745 0.866667 0.905882
+map_Kd White_porcelai3.jpg
+newmtl Black_porcelain0
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain0.jpg
+newmtl White_porcelai4
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai4.jpg
+newmtl Black_porcelain1
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain1.jpg
+newmtl Black_porcelain2
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain2.jpg
+newmtl Black_porcelain3
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain3.jpg
+newmtl White_porcelai5
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai5.jpg
+newmtl White_porcelai6
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai6.jpg
+newmtl White_porcelai7
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.862745 0.866667 0.905882
+map_Kd White_porcelai7.jpg
+newmtl White_porcelai8
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai8.jpg
+newmtl White_porcelai9
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.862745 0.866667 0.905882
+map_Kd White_porcelai9.jpg
+newmtl White_porcelai10
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai10.jpg
+newmtl White_porcelai11
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.862745 0.866667 0.905882
+map_Kd White_porcelai11.jpg
+newmtl White_porcelai12
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.498039 0.517647 0.654902
+map_Kd White_porcelai12.jpg
+newmtl Pewter1
+Ka 0 0 0
+Ns 20.0855
+Ks 0.835294 0.921569 1
+Kd 0.603922 0.603922 0.603922
+map_Kd Pewter1.jpg
+newmtl Flat_gray1
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray1.jpg
+newmtl Metallic_Varnish
+Ka 0 0 0
+Ns 6.04965
+Ks 0.733333 0.92549 1
+Kd 0 0 0.0784314
+map_Kd Metallic_Varnish.jpg
+newmtl Pottery_clay
+Ka 0 0 0
+Ns 2.31637
+Ks 0.129412 0.129412 0.129412
+Kd 0.027451 0.027451 0.027451
+map_Kd Pottery_clay.jpg
+newmtl overheatedmetal0
+Ka 0 0 0
+Ns 1
+Ks 0.592157 0.635294 1
+Kd 0.695167 0.725616 0.757856
+map_Kd overheatedmetal0.jpg
+newmtl overheatedmetal1
+Ka 0 0 0
+Ns 1
+Ks 0.592157 0.635294 1
+Kd 0.695167 0.725616 0.757856
+map_Kd overheatedmetal1.jpg
+newmtl overheatedmetal2
+Ka 0 0 0
+Ns 1
+Ks 0.592157 0.635294 1
+Kd 0.695167 0.725616 0.757856
+map_Kd overheatedmetal2.jpg
+newmtl Flat_gray2
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray2.jpg
+newmtl Luminous_Glow0
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow0.jpg
+newmtl Flat_gray3
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray3.jpg
+newmtl Luminous_Glow1
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow1.jpg
+newmtl Luminous_Glow2
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow2.jpg
+newmtl Flat_gray4
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray4.jpg
+newmtl Luminous_Glow3
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow3.jpg
+newmtl Flat_gray5
+Ka 0 0 0
+Ns 8.16617
+Ks 1 1 1
+Kd 0.501961 0.501961 0.501961
+map_Kd Flat_gray5.jpg
+newmtl Luminous_Glow4
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow4.jpg
+newmtl Luminous_Glow5
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow5.jpg
+newmtl Luminous_Glow6
+Ka 0 0 0
+Ns 46.5255
+Ks 1 1 1
+Kd 1 0.835294 0.176471
+map_Kd Luminous_Glow6.jpg
+newmtl Black_porcelain4
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain4.jpg
+newmtl Black_porcelain5
+Ka 0 0 0
+Ns 164.022
+Ks 1 1 1
+Kd 0.133333 0.141176 0.192157
+map_Kd Black_porcelain5.jpg

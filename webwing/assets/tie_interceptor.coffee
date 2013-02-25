@@ -1,16 +1,81 @@
 class window.TieIn extends Ship
   laserBolts: []
-  nextLaser: 0
+  autoRand: Math.PI/4
 
   constructor: (name, initPos, initRot) ->
     console.log("tiein const")
     super(name, initPos, initRot, "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
+    @target = []
+    @nextLaser = 0
+    @minDist = 400
+    @maxDist = 2000
+    @dir = 1
+    @targetRot = null
+    @switch_near = false
+    @switch_far = false
+
+  load: (onLoaded) =>
+    super (ship) =>
+      @model.useQuaternion = true
+      onLoaded(ship)
+
+  setTarget: (ship) =>
+    @target.push(ship)
+
+  autoPilot: () =>
+    modelClone = @model.clone()
+    dist = modelClone.position.distanceTo(@target[0].model.position)
+    if dist < @minDist and @dir == 1
+      @switch_near = true
+    if dist > @minDist and @switch_near
+      @dir = -1
+      @targetRot = null
+      @switch_near = false
+    if dist > @maxDist and @dir == -1
+      @switch_far = true
+    if dist < @maxDist and @switch_far
+      @dir = 1
+      @targetRot = null
+      @switch_far = false
+    @speed = Math.max(220, @target[0].speed-10)
+    if @dir == 1 and !@switch_near
+      modelClone.lookAt(@target[0].model.position)
+    if @targetRot == null
+      if @switch_near
+        modelClone.lookAt(@target[0].model.position)
+        Util.rotObj(modelClone, Util.xAxis, Math.PI + (@autoRand - Math.random()*@autoRand*2))
+        Util.rotObj(modelClone, Util.yAxis, (@autoRand - Math.random()*@autoRand*2))
+        Util.rotObj(modelClone, Util.zAxis, (@autoRand - Math.random()*@autoRand*2))
+        @targetRot = modelClone.quaternion.clone()
+      if @switch_far
+        modelClone.lookAt(@target[0].model.position)
+        @targetRot = modelClone.quaternion.clone()
+    if @switch_near or @switch_far
+      newRot = @targetRot
+    else
+      newRot = modelClone.quaternion.clone()
+    newPos = @getUpdatedModel(newRot)
+    toVals = {position:{x:newPos.x, y:newPos.y, z:newPos.z}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
+    @pathTween = new TWEEN.Tween(@model)
+    .to(toVals, 100)
+    .easing(TWEEN.Easing.Linear.None)
+    .onComplete(() =>
+      @autoPilot()
+    )
+    @pathTween.start()
+
+  getUpdatedModel: (quat) =>
+    newShip = @model.clone()
+    newShip.quaternion = quat
+    newShip.translateZ(@speed/10)
+    newShip.position.clone()
 
   fireSingle: () =>
-    distance = 1000
-    tweentime = 1000
+    distance = 4000
+    tweentime = 2000
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     scene.add(laserContainer)
     laserMesh = new THREE.Mesh(@laserGeom, @laserMat)
@@ -45,17 +110,18 @@ class window.TieIn extends Ship
 
     setTimeout(() =>
       @fireSingle()
-    , tweentime/4);
+    , tweentime/8);
 
     setTimeout(() =>
       @laserCleanup(laserContainer)
     , tweentime);
 
   fireDouble: () =>
-    distance = 1000;
-    tweentime = 1000;
+    distance = 4000;
+    tweentime = 2000;
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
@@ -82,17 +148,18 @@ class window.TieIn extends Ship
 
     setTimeout(() =>
       @fireDouble()
-    , tweentime/2);
+    , tweentime/4);
 
     setTimeout(() =>
       @laserCleanup(laserContainer)
     , tweentime);
 
   fireQuad: () =>
-    distance = 1000;
-    tweentime = 1000;
+    distance = 4000;
+    tweentime = 2000;
     laserContainer = new THREE.Object3D()
-    laserContainer.rotation = @model.rotation.clone()
+    laserContainer.useQuaternion = true
+    laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
@@ -137,8 +204,11 @@ class window.TieIn extends Ship
     #.start()
 
     setTimeout(() =>
-      @laserCleanup(laserContainer)
       @fireQuad()
+    , tweentime/2);
+
+    setTimeout(() =>
+      @laserCleanup(laserContainer)
     , tweentime);
 
   laserCleanup: (container) =>
