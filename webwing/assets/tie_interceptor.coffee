@@ -13,11 +13,29 @@ class window.TieIn extends Ship
     @targetRot = null
     @switch_near = false
     @switch_far = false
+    @targetSprite = null
 
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
+      @addTargetSprite()
       onLoaded(ship)
+
+  addTargetSprite: () =>
+    scale = 35.0
+    targetTexture = THREE.ImageUtils.loadTexture( "static/img/enemy_target.png" )
+    targetMaterial = new THREE.SpriteMaterial( {map: targetTexture, useScreenCoordinates: false, transparent:true, opacity:0.7} )
+    @targetSprite = new THREE.Sprite(targetMaterial)
+    @targetSprite.scale.set(scale, scale, scale)
+    @targetSprite.blending = THREE.AdditiveBlending
+    @model.add(@targetSprite)
+
+  setAsPlayerTarget: () =>
+    tween = new TWEEN.Tween(@targetSprite)
+    .to({rotation:Math.PI}, 5000)
+    .easing(TWEEN.Easing.Linear.None)
+    .repeat(Infinity)
+    tween.start()
 
   setTarget: (ship) =>
     @target.push(ship)

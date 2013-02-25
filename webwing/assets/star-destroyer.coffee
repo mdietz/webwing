@@ -8,11 +8,22 @@ class window.SD extends Ship
     console.log("corvette const")
     super(name, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
     @laserGeom = new THREE.CubeGeometry( 2, 2, 40 );
+    @targetSprite = null
 
   load: (onLoaded) =>
     super (ship) =>
       @model.scale.set(0.1, 0.1, 0.1)
+      @addTargetSprite()
       onLoaded(ship)
+
+  addTargetSprite: () =>
+    scale = 400.0
+    targetTexture = THREE.ImageUtils.loadTexture( "static/img/enemy_target.png" )
+    targetMaterial = new THREE.SpriteMaterial( {map: targetTexture, useScreenCoordinates: false, transparent:true, opacity:0.7} )
+    @targetSprite = new THREE.Sprite(targetMaterial)
+    @targetSprite.scale.set(scale, scale, scale)
+    @targetSprite.blending = THREE.AdditiveBlending
+    @model.add(@targetSprite)
 
   addTarget: (ship) =>
     @targets.push(ship)

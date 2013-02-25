@@ -6,6 +6,7 @@ class window.Corvette extends Ship
     console.log("corvette const")
     super(name, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
     @laserGeom = new THREE.CubeGeometry( 2, 2, 40 );
+    @targetSprite = null
 
   addTarget: (ship) =>
     @targets.push(ship)
@@ -14,7 +15,17 @@ class window.Corvette extends Ship
     super (ship) =>
       @model.scale.set(0.2, 0.2, 0.2)
       @model.useQuaternion = true
+      @addTargetSprite()
       onLoaded(ship)
+
+  addTargetSprite: () =>
+    scale = 200.0
+    targetTexture = THREE.ImageUtils.loadTexture( "static/img/allied_target.png" )
+    targetMaterial = new THREE.SpriteMaterial( {map: targetTexture, useScreenCoordinates: false, transparent:true, opacity:0.7} )
+    @targetSprite = new THREE.Sprite(targetMaterial)
+    @targetSprite.scale.set(scale, scale, scale)
+    @targetSprite.blending = THREE.AdditiveBlending
+    @model.add(@targetSprite)
 
   fireSingle: () =>
     distance = 10000
