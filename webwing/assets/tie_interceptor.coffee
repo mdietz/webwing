@@ -219,6 +219,7 @@ class window.TieIn extends Ship
       @switch_far = true
     if dist < @maxDist and @switch_far
       @dir = 1
+      @fireDouble()
       @targetRot = null
       @switch_far = false
     @speed = Math.max(220, @target[0].speed-10)
@@ -385,7 +386,8 @@ class window.TieIn extends Ship
       , tweentime)
 
     setTimeout(() =>
-      @fireDouble()
+      if @dir == 1
+        @fireDouble()
     , tweentime/4);
 
   fireQuad: () =>
