@@ -22,4 +22,7 @@ window.Util =
       else
         box.union(geometry.boundingBox)
     )
+    console.log(object3D.scale)
+    box.min = box.min.multiply(object3D.scale)
+    box.max = box.max.multiply(object3D.scale)
     box

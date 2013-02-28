@@ -7,6 +7,9 @@ class window.Corvette extends Ship
     super(name, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
     @laserGeom = new THREE.CubeGeometry( 2, 2, 40 );
     @targetSprite = null
+    @boundingSphere = null
+    @shieldShown = false
+    @shieldOn = [false, false, false, false, false, false, false, false]
 
   addTarget: (ship) =>
     @targets.push(ship)
@@ -16,7 +19,149 @@ class window.Corvette extends Ship
       @model.scale.set(0.2, 0.2, 0.2)
       @model.useQuaternion = true
       @addTargetSprite()
+      @addBoundingSphere()
+      @resetPos()
+      @resetRot()
       onLoaded(ship)
+
+  addBoundingSphere: () =>
+    @boundingSphere = new THREE.Object3D()
+    sphere = new THREE.SphereGeometry( 400, 12, 12 )
+    materials = [
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, side: THREE.BackSide } )
+    ]
+    sphere.materials = materials
+
+    sphere2 = new THREE.SphereGeometry( 400, 12, 12 )
+    materials2 = [
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      #new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { visible: false } ),
+      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, side: THREE.FrontSide } )
+    ]
+    sphere2.materials = materials2
+    for face, i in sphere.faces
+      if i < 144/2
+        if i%12 == 0 or i%12 == 1 or i%12 == 2
+          face.materialIndex = 0
+        else if i%12 == 3 or i%12 == 4 or i%12 == 5
+          face.materialIndex = 1
+        else if i%12 == 6 or i%12 == 7 or i%12 == 8
+          face.materialIndex = 2
+        else if i%12 == 9 or i%12 == 10 or i%12 == 11
+          face.materialIndex = 3
+      else
+        if i%12 == 0 or i%12 == 1 or i%12 == 2
+          face.materialIndex = 4
+        else if i%12 == 3 or i%12 == 4 or i%12 == 5
+          face.materialIndex = 5
+        else if i%12 == 6 or i%12 == 7 or i%12 == 8
+          face.materialIndex = 6
+        else if i%12 == 9 or i%12 == 10 or i%12 == 11
+          face.materialIndex = 7
+
+    for face, i in sphere2.faces
+      if i < 144/2
+        if i%12 == 0 or i%12 == 1 or i%12 == 2
+          face.materialIndex = 0
+        else if i%12 == 3 or i%12 == 4 or i%12 == 5
+          face.materialIndex = 1
+        else if i%12 == 6 or i%12 == 7 or i%12 == 8
+          face.materialIndex = 2
+        else if i%12 == 9 or i%12 == 10 or i%12 == 11
+          face.materialIndex = 3
+      else
+        if i%12 == 0 or i%12 == 1 or i%12 == 2
+          face.materialIndex = 4
+        else if i%12 == 3 or i%12 == 4 or i%12 == 5
+          face.materialIndex = 5
+        else if i%12 == 6 or i%12 == 7 or i%12 == 8
+          face.materialIndex = 6
+        else if i%12 == 9 or i%12 == 10 or i%12 == 11
+          face.materialIndex = 7
+
+    mesh = new THREE.Mesh( sphere, new THREE.MeshFaceMaterial(materials) )
+    mesh2 = new THREE.Mesh( sphere2, new THREE.MeshFaceMaterial(materials2) )
+
+    mesh.position.set(0,0,-60)
+    mesh2.position.set(0,0,-60)
+    @boundingSphere.add(mesh)
+    @boundingSphere.add(mesh2)
+    @boundingSphere.scale.set(0.8, 0.6, 2.0)
+    @model.add(@boundingSphere)
+
+  shieldShown: (index) =>
+    shieldOn[index]
+
+  getSectorFromIndex: (i) =>
+    ret = 0
+    if i < 144/2
+      if i%12 == 0 or i%12 == 1 or i%12 == 2
+        ret = 0
+      else if i%12 == 3 or i%12 == 4 or i%12 == 5
+        ret = 1
+      else if i%12 == 6 or i%12 == 7 or i%12 == 8
+        ret = 2
+      else if i%12 == 9 or i%12 == 10 or i%12 == 11
+        ret = 3
+    else
+      if i%12 == 0 or i%12 == 1 or i%12 == 2
+        ret = 4
+      else if i%12 == 3 or i%12 == 4 or i%12 == 5
+        ret = 5
+      else if i%12 == 6 or i%12 == 7 or i%12 == 8
+        ret = 6
+      else if i%12 == 9 or i%12 == 10 or i%12 == 11
+        ret = 7
+    ret
+
+  showShield: (index) =>
+    i = @getSectorFromIndex(index)
+    console.log(i)
+    if !@shieldOn[index]
+      @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[9]
+      @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[9]
+      @shieldOn[index] = true
+      setTimeout(() =>
+        @hideShield(index)
+      , 100)
+
+  hideShield: (index) =>
+    i = @getSectorFromIndex(index)
+    @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[8]
+    @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[8]
+    @shieldOn[index] = false
 
   addTargetSprite: () =>
     scale = 200.0
@@ -65,6 +210,7 @@ class window.Corvette extends Ship
     laserContainer.useQuaternion = true
     laserContainer.position = @model.position.clone()
     laserContainer.quaternion = @model.quaternion.clone()
+    window.scene.add(laserContainer)
     if @targets.length == 0
       Util.rotObj(laserContainer, Util.xAxis, Math.random()*2*Math.PI)
       Util.rotObj(laserContainer, Util.yAxis, Math.random()*2*Math.PI)
@@ -75,29 +221,75 @@ class window.Corvette extends Ship
       Util.rotObj(laserContainer, Util.yAxis, cof - Math.random()*cof*2)
       Util.rotObj(laserContainer, Util.zAxis, Math.random()*Math.PI)
 
-    scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh1)
     laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh2)
     laserMesh1.position.set(5,0,0)
     laserMesh2.position.set(-5,0,0)
-    new TWEEN.Tween(laserMesh1.position)
-    .to({x: 0, y: 0, z:distance}, tweentime)
-    .easing(TWEEN.Easing.Linear.None)
-    .start()
-    new TWEEN.Tween(laserMesh2.position)
-    .to({x: 0, y: 0, z:distance}, tweentime)
-    .easing(TWEEN.Easing.Linear.None)
-    .start()
+
+    laserContainer.updateMatrix()
+    clonedLaser = laserContainer.clone()
+    clonedLaser.translateZ(1)
+    endPos = clonedLaser.position.clone()
+    orientationVector = endPos.sub(laserContainer.position.clone()).normalize()
+    raycaster = new THREE.Raycaster(laserContainer.position.clone(), orientationVector.clone(), 0, 10000)
+    boundingBoxes = []
+
+    # TODO: Optimize this
+    for ship in window.ships
+      if ship != this
+        worldSphere = ship.boundingSphere.clone()
+        worldSphere.useQuaternion = true
+        dupModel = ship.model.clone()
+        worldSphere.position = dupModel.position.clone()
+        worldSphere.quaternion = dupModel.quaternion.clone()
+        worldSphere.scale.multiply(dupModel.scale.clone())
+        boundingBoxes.push(worldSphere)
+        worldSphere.ship = ship
+        #scene.add(worldSphere)
+
+    toPoint = null
+    for intersect in raycaster.intersectObjects(boundingBoxes, true)
+      #console.log(intersect)
+      toPoint = intersect.point
+      toPoint.sub(@model.position.clone())
+      tgtDist = intersect.distance
+      hitFace = intersect.face
+      hitTarget = intersect.object.parent.ship
+      faceIndex = intersect.faceIndex
+      pctZ = intersect.distance/10000.0
+      break
+    if toPoint != null
+      #console.log({x: 0, y: 0, z:tgtDist.z, time:tweentime*pctZ})
+      new TWEEN.Tween(laserMesh1.position)
+      .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      new TWEEN.Tween(laserMesh2.position)
+      .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      setTimeout(() =>
+        @laserCleanup(laserContainer)
+        hitTarget.showShield(faceIndex)
+      , tweentime*pctZ)
+    else
+      new TWEEN.Tween(laserMesh1.position)
+      .to({x: 0, y: 0, z:distance}, tweentime)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      new TWEEN.Tween(laserMesh2.position)
+      .to({x: 0, y: 0, z:distance}, tweentime)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      setTimeout(() =>
+        @laserCleanup(laserContainer)
+      , tweentime)
 
     setTimeout(() =>
       @fireDouble()
     , tweentime/4);
-
-    setTimeout(() =>
-      @laserCleanup(laserContainer)
-    , tweentime);
 
   laserCleanup: (container) =>
     window.scene.remove(container)

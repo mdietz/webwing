@@ -228,7 +228,7 @@ class window.FlightControls
       when 32
         if !@spaceIsDown
           @spaceIsDown = true
-          @recomputeTweens()
+          @playerShip.fireDouble()
       when 65, 37
         if !@leftIsDown
           #console.log("Left down")
@@ -271,7 +271,6 @@ class window.FlightControls
     switch event.keyCode
       when 32
         @spaceIsDown = false
-        @pathTween.stop()
       when 65, 37
         #console.log("Left lifted")
         @leftIsDown = false
