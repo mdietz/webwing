@@ -5,6 +5,7 @@ class window.Ship
 
   constructor: (@name, @initPos, @initRot, @objLoc, @mtlLoc, @laserColor) ->
     @laserMat = new THREE.MeshBasicMaterial( { color: @laserColor, opacity: 0.5 } )
+    @rayMat = new THREE.MeshBasicMaterial( { color: @laserColor, linewidth: 0.1} )
     @laserGeom = new THREE.CubeGeometry( .6, .6, 20 );
     console.log("ship const")
 
@@ -16,8 +17,6 @@ class window.Ship
         console.log("loading")
         object = event.content
         @model = new THREE.Object3D()
-        @model.position = @initPos
-        @model.rotation = @initRot
         @model.add(object)
         scene.add(@model)
         @loaded = true
@@ -34,13 +33,20 @@ class window.Ship
           console.log(object)
           object = object.children[0]
         @model = new THREE.Object3D()
-        @model.position = @initPos
-        @model.rotation = @initRot
         @model.add(object)
         scene.add(@model)
         @loaded = true
         onLoaded(this)
         )
+
+  resetPos: () =>
+    @model.position = @initPos
+
+  resetRot: () =>
+    @model.quaternion.set(0,0,0,1)
+    Util.rotObj(@model, Util.xAxis, @initRot.x)
+    Util.rotObj(@model, Util.yAxis, @initRot.y)
+    Util.rotObj(@model, Util.zAxis, @initRot.z)
 
   setSpeed: (newSpeed) =>
     @speed = newSpeed
