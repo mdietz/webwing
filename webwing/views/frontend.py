@@ -39,7 +39,7 @@ def index():
     shader_content = read_shader(shader + ".shader")
     shaders.append((shader, shader_content))
 
-  coffee_files = ["flight_controls", "util", "ship", "xwing", "tie_interceptor", "star_destroyer", "star-destroyer", "lambda_shuttle", "corvette"]
+  coffee_files = ["flight_controls", "util", "ship", "xwing", "tie_interceptor", "star-destroyer", "corvette"]
 
   stylus_files = []
 

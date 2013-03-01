@@ -11,7 +11,11 @@ class window.TieIn extends Ship
     @targetRot = null
     @switch_near = false
     @switch_far = false
+    @range = 4000
     @targetSprite = null
+
+  onHit: (faceIndex) =>
+    @showShield(faceIndex)
 
   load: (onLoaded) =>
     super (ship) =>
@@ -143,10 +147,8 @@ class window.TieIn extends Ship
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
     laserMesh1 = @laserGeom.clone()
-    #laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh1)
     laserMesh2 = @laserGeom.clone()
-    #laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh2)
     switch @nextLaser
       when 0, 2
@@ -157,44 +159,16 @@ class window.TieIn extends Ship
         laserMesh1.position.set(6.6,-3.7,23)
         laserMesh2.position.set(-6.6,2.3,23)
         @nextLaser = 0
-
     laserContainer.updateMatrix()
-    clonedLaser = laserContainer.clone()
-    clonedLaser.translateZ(1)
-    endPos = clonedLaser.position.clone()
-    orientationVector = endPos.sub(laserContainer.position.clone()).normalize()
-    #@addLaserRay(@model.position.clone(), orientationVector.clone())
-    raycaster = new THREE.Raycaster(laserContainer.position.clone(), orientationVector.clone(), 0, 4000)
-    boundingBoxes = []
 
-    # TODO: Optimize this
-    for ship in window.ships
-      if ship != this
-        worldSphere = ship.boundingSphere.clone()
-        worldSphere.useQuaternion = true
-        dupModel = ship.model.clone()
-        worldSphere.position = dupModel.position.clone()
-        worldSphere.quaternion = dupModel.quaternion.clone()
-        worldSphere.scale.multiply(dupModel.scale.clone())
-        boundingBoxes.push(worldSphere)
-        worldSphere.ship = ship
-        #scene.add(worldSphere)
+    intersect = @computeHit(laserContainer)
 
-    #console.log(boundingBoxes)
-    toPoint = null
-    for intersect in raycaster.intersectObjects(boundingBoxes, true)
-      #console.log(intersect)
-      toPoint = intersect.point
-      toPoint.sub(@model.position.clone())
+    if intersect != null
       tgtDist = intersect.distance
       hitFace = intersect.face
-      faceIndex = intersect.faceIndex
       hitTarget = intersect.object.parent.ship
-      #console.log(hitTarget)
-      pctZ = intersect.distance/4000.0
-      break
-    if toPoint != null
-      #console.log({x: laserMesh1.position.x*pctZ, y: laserMesh1.position.y*pctZ, z:toPoint.z, time:tweentime*pctZ})
+      faceIndex = intersect.faceIndex
+      pctZ = intersect.distance/@range
       new TWEEN.Tween(laserMesh1.position)
       .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
       .easing(TWEEN.Easing.Linear.None)
@@ -204,7 +178,7 @@ class window.TieIn extends Ship
       .easing(TWEEN.Easing.Linear.None)
       .start()
       setTimeout(() =>
-        hitTarget.showShield(faceIndex)
+        hitTarget.onHit(faceIndex)
         @laserCleanup(laserContainer)
       , tweentime*pctZ)
     else

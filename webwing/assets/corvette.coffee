@@ -5,6 +5,7 @@ class window.Corvette extends Ship
     console.log("corvette const")
     super(name, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
     @targetSprite = null
+    @range = 10000
 
   load: (onLoaded) =>
     super (ship) =>
@@ -15,6 +16,9 @@ class window.Corvette extends Ship
       @resetPos()
       @resetRot()
       onLoaded(ship)
+
+  onHit: (faceIndex) =>
+    @showShield(faceIndex)
 
   addTargetSprite: () =>
     scale = 200.0
@@ -40,21 +44,38 @@ class window.Corvette extends Ship
       Util.rotObj(laserContainer, Util.xAxis, @cof - Math.random()*@cof*2)
       Util.rotObj(laserContainer, Util.yAxis, @cof - Math.random()*@cof*2)
     scene.add(laserContainer)
-    laserMesh = new THREE.Mesh(@laserGeom, @laserMat)
+    laserMesh = @laserGeom.clone()
     laserContainer.add(laserMesh)
+    laserContainer.updateMatrix()
+    
+    intersect = @computeHit(laserContainer)
 
-    new TWEEN.Tween(laserMesh.position)
-    .to({x: 0, y: 0, z:distance}, tweentime)
-    .easing(TWEEN.Easing.Linear.None)
-    .start()
+    if intersect != null
+      tgtDist = intersect.distance
+      hitFace = intersect.face
+      hitTarget = intersect.object.parent.ship
+      faceIndex = intersect.faceIndex
+      pctZ = intersect.distance/@range
+      new TWEEN.Tween(laserMesh.position)
+      .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      setTimeout(() =>
+        @laserCleanup(laserContainer)
+        hitTarget.onHit(faceIndex)
+      , tweentime*pctZ)
+    else
+      new TWEEN.Tween(laserMesh.position)
+      .to({x: 0, y: 0, z:distance}, tweentime)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      setTimeout(() =>
+        @laserCleanup(laserContainer)
+      , tweentime)
 
     setTimeout(() =>
       @fireSingle()
     , tweentime/8);
-
-    setTimeout(() =>
-      @laserCleanup(laserContainer)
-    , tweentime);
 
   fireDouble: () =>
     distance = 10000
@@ -81,40 +102,14 @@ class window.Corvette extends Ship
     laserMesh1.position.set(5,0,0)
     laserMesh2.position.set(-5,0,0)
 
-    laserContainer.updateMatrix()
-    clonedLaser = laserContainer.clone()
-    clonedLaser.translateZ(1)
-    endPos = clonedLaser.position.clone()
-    orientationVector = endPos.sub(laserContainer.position.clone()).normalize()
-    raycaster = new THREE.Raycaster(laserContainer.position.clone(), orientationVector.clone(), 0, 10000)
-    boundingBoxes = []
+    intersect = @computeHit(laserContainer)
 
-    # TODO: Optimize this
-    for ship in window.ships
-      if ship != this
-        worldSphere = ship.boundingSphere.clone()
-        worldSphere.useQuaternion = true
-        dupModel = ship.model.clone()
-        worldSphere.position = dupModel.position.clone()
-        worldSphere.quaternion = dupModel.quaternion.clone()
-        worldSphere.scale.multiply(dupModel.scale.clone())
-        boundingBoxes.push(worldSphere)
-        worldSphere.ship = ship
-        #scene.add(worldSphere)
-
-    toPoint = null
-    for intersect in raycaster.intersectObjects(boundingBoxes, true)
-      #console.log(intersect)
-      toPoint = intersect.point
-      toPoint.sub(@model.position.clone())
+    if intersect != null
       tgtDist = intersect.distance
       hitFace = intersect.face
       hitTarget = intersect.object.parent.ship
       faceIndex = intersect.faceIndex
-      pctZ = intersect.distance/10000.0
-      break
-    if toPoint != null
-      #console.log({x: 0, y: 0, z:tgtDist.z, time:tweentime*pctZ})
+      pctZ = intersect.distance/@range
       new TWEEN.Tween(laserMesh1.position)
       .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
       .easing(TWEEN.Easing.Linear.None)
@@ -125,7 +120,7 @@ class window.Corvette extends Ship
       .start()
       setTimeout(() =>
         @laserCleanup(laserContainer)
-        hitTarget.showShield(faceIndex)
+        hitTarget.onHit(faceIndex)
       , tweentime*pctZ)
     else
       new TWEEN.Tween(laserMesh1.position)

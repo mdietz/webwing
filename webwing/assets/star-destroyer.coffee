@@ -5,6 +5,7 @@ class window.SD extends Ship
     console.log("corvette const")
     super(name, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
     @targetSprite = null
+    @range = 10000
 
   load: (onLoaded) =>
     super (ship) =>
@@ -16,6 +17,9 @@ class window.SD extends Ship
       @resetPos()
       @resetRot()
       onLoaded(ship)
+
+  onHit: (faceIndex) =>
+    @showShield(faceIndex)
 
   addTargetSprite: () =>
     scale = 400.0
@@ -46,41 +50,16 @@ class window.SD extends Ship
       Util.rotObj(laserContainer, Util.yAxis, @cof - Math.random()*@cof*2)
     laserMesh = @laserGeom.clone()
     laserContainer.add(laserMesh)
-
     laserContainer.updateMatrix()
-    clonedLaser = laserContainer.clone()
-    clonedLaser.translateZ(1)
-    endPos = clonedLaser.position.clone()
-    orientationVector = endPos.sub(laserContainer.position.clone()).normalize()
-    raycaster = new THREE.Raycaster(laserContainer.position.clone(), orientationVector.clone(), 0, 10000)
-    boundingBoxes = []
 
-    # TODO: Optimize this
-    for ship in window.ships
-      if ship != this
-        worldSphere = ship.boundingSphere.clone()
-        worldSphere.useQuaternion = true
-        dupModel = ship.model.clone()
-        worldSphere.position = dupModel.position.clone()
-        worldSphere.quaternion = dupModel.quaternion.clone()
-        worldSphere.scale.multiply(dupModel.scale.clone())
-        boundingBoxes.push(worldSphere)
-        worldSphere.ship = ship
-        #scene.add(worldSphere)
+    intersect = @computeHit(laserContainer)
 
-    toPoint = null
-    for intersect in raycaster.intersectObjects(boundingBoxes, true)
-      #console.log(intersect)
-      toPoint = intersect.point
-      toPoint.sub(@model.position.clone())
+    if intersect != null
       tgtDist = intersect.distance
+      hitFace = intersect.face
       hitTarget = intersect.object.parent.ship
       faceIndex = intersect.faceIndex
-      pctZ = intersect.distance/10000.0
-      break
-    if toPoint != null
-      #console.log(@model.position)
-      #console.log({x: 0, y: 0, z:tgtDist, time:tweentime*pctZ})
+      pctZ = intersect.distance/@range
       new TWEEN.Tween(laserMesh.position)
       .to({x: 0, y: 0, z:tgtDist}, tweentime*pctZ)
       .easing(TWEEN.Easing.Linear.None)

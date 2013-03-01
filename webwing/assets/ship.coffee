@@ -14,6 +14,7 @@ class window.Ship
     @speed = 0
     @targets = []
     @focus = null
+    @range = 1000
     @boundingSphere = null
     @shieldOn = [false, false, false, false, false, false, false, false]
 
@@ -60,6 +61,32 @@ class window.Ship
     Util.rotObj(@model, Util.xAxis, @initRot.x)
     Util.rotObj(@model, Util.yAxis, @initRot.y)
     Util.rotObj(@model, Util.zAxis, @initRot.z)
+
+  computeHit: (laserContainer) =>
+    clonedLaser = laserContainer.clone()
+    clonedLaser.translateZ(1)
+    endPos = clonedLaser.position.clone()
+    orientationVector = endPos.sub(laserContainer.position.clone()).normalize()
+    raycaster = new THREE.Raycaster(laserContainer.position.clone(), orientationVector.clone(), 0, @range)
+    boundingBoxes = []
+
+    # TODO: Optimize this
+    for ship in window.ships
+      if ship != this
+        worldSphere = ship.boundingSphere.clone()
+        worldSphere.useQuaternion = true
+        dupModel = ship.model.clone()
+        worldSphere.position = dupModel.position.clone()
+        worldSphere.quaternion = dupModel.quaternion.clone()
+        worldSphere.scale.multiply(dupModel.scale.clone())
+        boundingBoxes.push(worldSphere)
+        worldSphere.ship = ship
+
+    intersection = null
+    for intersect in raycaster.intersectObjects(boundingBoxes, true)
+      intersection = intersect
+      break
+    return intersection
 
   # parameters: sphere_radius, mesh_offsets, scale
   createBoundingSphere: (radius, offset, scale) =>
