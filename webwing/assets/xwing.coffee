@@ -1,48 +1,20 @@
 class window.XWing extends Ship
-  laserBolts: []
-  nextLaser: 0
 
   constructor: (name, initPos, initRot) ->
     console.log("xwing const")
     super(name, initPos, initRot, "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
-    @target = []
     @crosshair = null
-    @boundingSphere = null
-    @shieldOn = [false, false, false, false, false, false, false, false]
+    @nextLaser = 0
 
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
-      @boundingBox = Util.getCompoundBoundingBox(@model)
       @addThrust()
       @addCrosshair()
-      @addBoundingSphere()
-      #@addShield()
-      #@addTargetRay()
+      @createBoundingSphere(15, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1.0, 0.5, 1.0))
       @resetPos()
       @resetRot()
       onLoaded(ship)
-
-  setTarget: (ship) =>
-    @target.push(ship)
-    ship.setAsPlayerTarget()
-
-  addTargetRay: () =>
-    geometry = new THREE.Geometry();
-    geometry.vertices.push( new THREE.Vector3(0, 0, 0 ) );
-    geometry.vertices.push( new THREE.Vector3(0, 0, 2000 ) )
-    line = new THREE.Line(geometry, @rayMat)
-    @model.add(line)
-
-  addLaserRay: (startPos, orientationVector) =>
-    _startPos = startPos.clone()
-    endPos = _startPos.add(orientationVector.multiplyScalar(2000))
-    geometry = new THREE.Geometry();
-    geometry.vertices.push( startPos )
-    geometry.vertices.push( endPos )
-    #console.log(endPos)
-    line = new THREE.Line(geometry, @rayMat)
-    window.scene.add(line)
 
   addCrosshair: () =>
     scale = 4.0
@@ -83,178 +55,6 @@ class window.XWing extends Ship
     thrust3.position.set( -2.2, -2.3, -11 )
     thrust3.blending = THREE.AdditiveBlending
     @model.add( thrust3 )
-
-  addBoundingSphere: () =>
-    @boundingSphere = new THREE.Object3D()
-    sphere = new THREE.SphereGeometry( 15, 12, 12 )
-    materials = [
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, side: THREE.BackSide } )
-    ]
-    sphere.materials = materials
-
-    sphere2 = new THREE.SphereGeometry( 15, 12, 12 )
-    materials2 = [
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      #new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, depthTest:false, side: THREE.FrontSide } )
-    ]
-    sphere2.materials = materials2
-    for face, i in sphere.faces
-      if i < 144/2
-        if i%12 == 0 or i%12 == 1 or i%12 == 2
-          face.materialIndex = 0
-        else if i%12 == 3 or i%12 == 4 or i%12 == 5
-          face.materialIndex = 1
-        else if i%12 == 6 or i%12 == 7 or i%12 == 8
-          face.materialIndex = 2
-        else if i%12 == 9 or i%12 == 10 or i%12 == 11
-          face.materialIndex = 3
-      else
-        if i%12 == 0 or i%12 == 1 or i%12 == 2
-          face.materialIndex = 4
-        else if i%12 == 3 or i%12 == 4 or i%12 == 5
-          face.materialIndex = 5
-        else if i%12 == 6 or i%12 == 7 or i%12 == 8
-          face.materialIndex = 6
-        else if i%12 == 9 or i%12 == 10 or i%12 == 11
-          face.materialIndex = 7
-
-    for face, i in sphere2.faces
-      if i < 144/2
-        if i%12 == 0 or i%12 == 1 or i%12 == 2
-          face.materialIndex = 0
-        else if i%12 == 3 or i%12 == 4 or i%12 == 5
-          face.materialIndex = 1
-        else if i%12 == 6 or i%12 == 7 or i%12 == 8
-          face.materialIndex = 2
-        else if i%12 == 9 or i%12 == 10 or i%12 == 11
-          face.materialIndex = 3
-      else
-        if i%12 == 0 or i%12 == 1 or i%12 == 2
-          face.materialIndex = 4
-        else if i%12 == 3 or i%12 == 4 or i%12 == 5
-          face.materialIndex = 5
-        else if i%12 == 6 or i%12 == 7 or i%12 == 8
-          face.materialIndex = 6
-        else if i%12 == 9 or i%12 == 10 or i%12 == 11
-          face.materialIndex = 7
-
-    mesh = new THREE.Mesh( sphere, new THREE.MeshFaceMaterial(materials) )
-    mesh2 = new THREE.Mesh( sphere2, new THREE.MeshFaceMaterial(materials2) )
-
-    @boundingSphere.add(mesh)
-    @boundingSphere.add(mesh2)
-    @boundingSphere.scale.set(1.0, 0.5, 1.0)
-    @model.add(@boundingSphere)
-
-  shieldShown: (index) =>
-    shieldOn[index]
-
-  getSectorFromIndex: (i) =>
-    ret = 0
-    if i < 144/2
-      if i%12 == 0 or i%12 == 1 or i%12 == 2
-        ret = 0
-      else if i%12 == 3 or i%12 == 4 or i%12 == 5
-        ret = 1
-      else if i%12 == 6 or i%12 == 7 or i%12 == 8
-        ret = 2
-      else if i%12 == 9 or i%12 == 10 or i%12 == 11
-        ret = 3
-    else
-      if i%12 == 0 or i%12 == 1 or i%12 == 2
-        ret = 4
-      else if i%12 == 3 or i%12 == 4 or i%12 == 5
-        ret = 5
-      else if i%12 == 6 or i%12 == 7 or i%12 == 8
-        ret = 6
-      else if i%12 == 9 or i%12 == 10 or i%12 == 11
-        ret = 7
-    ret
-
-  showShield: (index) =>
-    i = @getSectorFromIndex(index)
-    #console.log(i)
-    if !@shieldOn[index]
-      @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[9]
-      @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[9]
-      @shieldOn[index] = true
-      setTimeout(() =>
-        @hideShield(index)
-      , 100)
-
-  hideShield: (index) =>
-    i = @getSectorFromIndex(index)
-    @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[8]
-    @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[8]
-    @shieldOn[index] = false
-
-  addShield: () =>
-    sphere = new THREE.SphereGeometry( 15, 12, 12 )
-    SHADING = THREE.SmoothShading
-    OPACITY = 0.2
-
-    color = 0x0000ff
-
-    material2Back = new THREE.MeshLambertMaterial( {
-      color: color,
-      ambient: color,
-      side: THREE.BackSide,
-      shading: SHADING,
-      transparent: true,
-      opacity: OPACITY
-      } )
-
-    material2Front = new THREE.MeshLambertMaterial( {
-      color: color,
-      ambient: color,
-      side: THREE.FrontSide,
-      shading: SHADING,
-      transparent: true,
-      opacity: OPACITY,
-      depthTest:false
-      } )
-
-    mesh = new THREE.Mesh( sphere, material2Back )
-    mesh.scale = @boundingSphere.scale
-    @model.add(mesh)
-
-    mesh = new THREE.Mesh( sphere, material2Front )
-    mesh.scale = @boundingSphere.scale
-    @model.add(mesh)
-
 
   fireSingle: () =>
     distance = 4000
@@ -300,9 +100,11 @@ class window.XWing extends Ship
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
     window.scene.add(laserContainer)
-    laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
+    laserMesh1 = @laserGeom.clone()
+    #laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh1)
-    laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
+    laserMesh2 = @laserGeom.clone()
+    #laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh2)
     switch @nextLaser
       when 0, 2

@@ -1,4 +1,4 @@
 webwing
 =======
 
-X-Wing clone using websockets / etc.
+X-Wing clone using websockets / webgl / coffeescript etc.
