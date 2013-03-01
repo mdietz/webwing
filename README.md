@@ -5,9 +5,13 @@ X-Wing clone using webgl / coffeescript etc.
 Controls
 ====
 `+/-`: Increase/Decrease speed
+
 `w/s`: Pitch
+
 `a/d`: Yaw
+
 `q/e`: Roll
+
 `space`: Fire
 
 Models
