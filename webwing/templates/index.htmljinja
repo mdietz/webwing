@@ -31,6 +31,9 @@
     {{ template_content|safe }}
   </script>
   {% endfor %}
+  {% for shader, shader_content in shaders %}
+    {{ shader_content|safe }}
+  {% endfor %}
   <style type="text/css">
     body {
       background-color: #ffffff;
@@ -45,16 +48,19 @@
     var corvette, xwing;
     var FlightControls;
     var camControls;
+    var stats;
     var firing = false;
     window.ships = [];
     window.bounds = [];
+    var start = Date.now();
+    var mesh, material;
 
     init();
 
     function init() {
 
-        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 200000 );
-        camera.position.z = -60;
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 200000 );
+        camera.position.z = -50;
         camera.position.y = 5;
         camera.position.x = 0;
         //camera.rotation.set(0, Math.PI, 0);
@@ -83,12 +89,16 @@
         scene.add(starsphere);
 
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
-        corvette = new Corvette("corvette", new THREE.Vector3(0,-200,2000), new THREE.Vector3(0,0,0))
+        corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
         sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
-        tie1 = new TieIn("tie1", new THREE.Vector3(0,0,1000), new THREE.Vector3(0,0,0))
-        tie2 = new TieIn("tie2", new THREE.Vector3(-20,20,1000), new THREE.Vector3(0,0,0))
-        tie3 = new TieIn("tie3", new THREE.Vector3(20,20,1000), new THREE.Vector3(0,0,0))
-        tie4 = new TieIn("tie4", new THREE.Vector3(-20,-20,1000), new THREE.Vector3(0,0,0))
+        tie1 = new TieIn("tie1", new THREE.Vector3(50,-50,4000), new THREE.Vector3(0,0,0))
+        tie2 = new TieIn("tie2", new THREE.Vector3(-50,50,4000), new THREE.Vector3(0,0,0))
+        tie3 = new TieIn("tie3", new THREE.Vector3(50,50,4000), new THREE.Vector3(0,0,0))
+        tie4 = new TieIn("tie4", new THREE.Vector3(-50,-50,4000), new THREE.Vector3(0,0,0))
+        tie5 = new TieIn("tie5", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
+        tie6 = new TieIn("tie6", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
+        tie7 = new TieIn("tie7", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
+        tie8 = new TieIn("tie8", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);
@@ -99,7 +109,7 @@
           window.ships.push(xwing);
           corvette.load(function(loadedShip2){
             console.log(corvette);
-            Util.rotObj(corvette.model, Util.yAxis, Math.PI/2);
+            //Util.rotObj(corvette.model, Util.yAxis, Math.PI/2);
             window.ships.push(corvette);
             sd.load(function(loadedShip3){
               window.ships.push(sd);
@@ -113,11 +123,26 @@
                   tie3.load(function(loadedShip6){
                     Util.rotObj(tie3.model, Util.yAxis, Math.PI);
                     window.ships.push(tie3);
-                    //animate();
                     tie4.load(function(loadedShip7){
                       Util.rotObj(tie4.model, Util.yAxis, Math.PI);
                       window.ships.push(tie4);
-                      animate();
+                      tie5.load(function(loadedShip8){
+                        Util.rotObj(tie5.model, Util.yAxis, Math.PI);
+                        window.ships.push(tie5);
+                        tie6.load(function(loadedShip9){
+                        Util.rotObj(tie6.model, Util.yAxis, Math.PI);
+                        window.ships.push(tie6);
+                        tie7.load(function(loadedShip10){
+                        Util.rotObj(tie7.model, Util.yAxis, Math.PI);
+                        window.ships.push(tie7);
+                        tie8.load(function(loadedShip11){
+                        Util.rotObj(tie8.model, Util.yAxis, Math.PI);
+                        window.ships.push(tie8);
+                        animate();
+                      });
+                      });
+                      });
+                      });
                     });
                  });
                 });
@@ -126,6 +151,31 @@
           });
         });
 
+        /*material = new THREE.ShaderMaterial( {
+
+                        uniforms: {
+                          tExplosion: { type: "t", value: THREE.ImageUtils.loadTexture( 'static/img/explosion.png' ) },
+                          time: { type: "f", value: Math.random() },
+                          weight: { type: "f", value: 10.0 }
+                        },
+                        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+                        fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+
+                      } );
+
+                      mesh = new THREE.Mesh( new THREE.IcosahedronGeometry( 20, 5 ), material );
+                      mesh.position.set(0,0,6000);
+                      new TWEEN.Tween(mesh.scale)
+                      .to({x: 100, y: 100, z:100}, 1000)
+                      .easing(TWEEN.Easing.Linear.None)
+                      .repeat(Infinity)
+                      .onComplete(function() {
+                        mesh.scale.set(1,1,1)
+                      })
+                      .start()
+
+                      scene.add( mesh );*/
+
         renderer = new THREE.WebGLRenderer({'antialias':false});
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.sortObjects = false;
@@ -133,7 +183,12 @@
         //camControls = new THREE.TrackballControls( camera );
         //camControls.target.set(0,0,0);
 
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+
         document.body.appendChild( renderer.domElement );
+        document.body.appendChild( stats.domElement );
 
     }
 
@@ -141,10 +196,13 @@
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
 
+        //material.uniforms[ 'time' ].value = .0005 * ( Date.now() - start );
+
         TWEEN.update();
         //camControls.update();
 
         renderer.render( scene, camera );
+        stats.update();
 
         if (!firing){
             //xwing.fireDouble();
@@ -152,22 +210,39 @@
             tie2.fireDouble();
             tie3.fireDouble();
             tie4.fireDouble();
+            tie5.fireDouble();
+            tie6.fireDouble();
+            tie7.fireDouble();
+            tie8.fireDouble();
             corvette.addTarget(sd);
+            corvette.addTarget(tie1);
+            corvette.addTarget(tie2);
+            corvette.addTarget(tie3);
+            corvette.addTarget(tie4);
+            corvette.addTarget(tie5);
+            corvette.addTarget(tie6);
+            corvette.addTarget(tie7);
+            corvette.addTarget(tie8);
             corvette.setSpeed(100);
-            xwing.setTarget(tie1);
-            tie1.setTarget(xwing);
+            xwing.addTarget(tie1);
+            tie1.setAsPlayerTarget();
+            tie1.addTarget(corvette);
             tie1.autoPilot();
-            tie2.setTarget(xwing);
+            tie2.addTarget(corvette);
             tie2.autoPilot();
-            tie3.setTarget(corvette);
+            tie3.addTarget(corvette);
             tie3.autoPilot();
-            tie4.setTarget(corvette);
+            tie4.addTarget(corvette);
             tie4.autoPilot();
+            tie5.addTarget(corvette);
+            tie5.autoPilot();
+            tie6.addTarget(corvette);
+            tie6.autoPilot();
+            tie7.addTarget(corvette);
+            tie7.autoPilot();
+            tie8.addTarget(corvette);
+            tie8.autoPilot();
             //sd.addTarget(xwing);
-            //sd.addTarget(tie1);
-            //sd.addTarget(tie2);
-            //sd.addTarget(tie3);
-            //sd.addTarget(tie4);
             sd.addTarget(corvette);
             corvette.fireDouble();
             sd.fireSingle();
