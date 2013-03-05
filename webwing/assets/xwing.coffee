@@ -2,7 +2,7 @@ class window.XWing extends Ship
 
   constructor: (name, initPos, initRot) ->
     console.log("xwing const")
-    super(name, initPos, initRot, "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
+    super(name, initPos.clone(), initRot.clone(), "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
     @crosshair = null
     @nextLaser = 0
     @range = 10000
@@ -137,7 +137,7 @@ class window.XWing extends Ship
       .start()
       setTimeout(() =>
         @laserCleanup(laserContainer)
-        hitTarget.showShield(faceIndex)
+        hitTarget.onHit(faceIndex)
       , tweentime*pctZ)
     else
       new TWEEN.Tween(laserMesh1.position)

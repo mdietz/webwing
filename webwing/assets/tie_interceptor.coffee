@@ -3,7 +3,7 @@ class window.TieIn extends Ship
 
   constructor: (name, initPos, initRot) ->
     console.log("tiein const")
-    super(name, initPos, initRot, "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
+    super(name, initPos.clone(), initRot.clone(), "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
     @nextLaser = 0
     @minDist = 400
     @maxDist = 2000
@@ -15,7 +15,7 @@ class window.TieIn extends Ship
     @targetSprite = null
 
   onHit: (faceIndex) =>
-    @showShield(faceIndex)
+    @explode()
 
   load: (onLoaded) =>
     super (ship) =>
@@ -26,6 +26,30 @@ class window.TieIn extends Ship
       @resetPos()
       @resetRot()
       onLoaded(ship)
+
+  reset: () =>
+    @pathTween.stop()
+    @resetPos()
+    @resetRot()
+    @autoPilot()
+    #@fireDouble()
+
+  explode: () =>
+    scale = 1.0
+    explosionTexture = THREE.ImageUtils.loadTexture( "static/img/Explosion.png" )
+    explosionMaterial = new THREE.SpriteMaterial( {map: explosionTexture, useScreenCoordinates: false, transparent:true, opacity:0.9} )
+    explosionSprite = new THREE.Sprite(explosionMaterial)
+    explosionSprite.scale.set(scale, scale, scale)
+    explosionSprite.blending = THREE.AdditiveBlending
+    @model.add(explosionSprite)
+    tween = new TWEEN.Tween(explosionSprite.scale)
+    .to({x:100.0, y:100.0, z:100.0}, 1000)
+    .easing(TWEEN.Easing.Linear.None)
+    .onComplete(() =>
+      @model.remove(explosionSprite)
+      @reset()
+    )
+    tween.start()
 
   addTargetSprite: () =>
     scale = 35.0

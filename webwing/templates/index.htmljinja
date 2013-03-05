@@ -91,14 +91,14 @@
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
         corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
         sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
-        tie1 = new TieIn("tie1", new THREE.Vector3(50,-50,4000), new THREE.Vector3(0,0,0))
-        tie2 = new TieIn("tie2", new THREE.Vector3(-50,50,4000), new THREE.Vector3(0,0,0))
-        tie3 = new TieIn("tie3", new THREE.Vector3(50,50,4000), new THREE.Vector3(0,0,0))
-        tie4 = new TieIn("tie4", new THREE.Vector3(-50,-50,4000), new THREE.Vector3(0,0,0))
-        tie5 = new TieIn("tie5", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
-        tie6 = new TieIn("tie6", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
-        tie7 = new TieIn("tie7", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
-        tie8 = new TieIn("tie8", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
+        tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
+        tie2 = new TieIn("tie2", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
+        tie3 = new TieIn("tie3", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
+        tie4 = new TieIn("tie4", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
+        tie5 = new TieIn("tie5", new THREE.Vector3(200,-200,4000), new THREE.Vector3(0,0,0))
+        tie6 = new TieIn("tie6", new THREE.Vector3(-200,200,4000), new THREE.Vector3(0,0,0))
+        tie7 = new TieIn("tie7", new THREE.Vector3(200,200,4000), new THREE.Vector3(0,0,0))
+        tie8 = new TieIn("tie8", new THREE.Vector3(-200,-200,4000), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);

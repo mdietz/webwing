@@ -66,7 +66,7 @@ class window.SD extends Ship
       .start()
       setTimeout(() =>
         @laserCleanup(laserContainer)
-        hitTarget.showShield(faceIndex)
+        hitTarget.onHit(faceIndex)
       , tweentime*pctZ)
     else
       new TWEEN.Tween(laserMesh.position)

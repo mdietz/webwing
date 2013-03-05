@@ -1,5 +1,5 @@
 class window.Corvette extends Ship
-  cof: 0.0174532925/2
+  cof: 0.0174532925
 
   constructor: (name, initPos, initRot) ->
     console.log("corvette const")
@@ -47,7 +47,7 @@ class window.Corvette extends Ship
     laserMesh = @laserGeom.clone()
     laserContainer.add(laserMesh)
     laserContainer.updateMatrix()
-    
+
     intersect = @computeHit(laserContainer)
 
     if intersect != null
@@ -101,6 +101,7 @@ class window.Corvette extends Ship
     laserContainer.add(laserMesh2)
     laserMesh1.position.set(5,0,0)
     laserMesh2.position.set(-5,0,0)
+    laserContainer.updateMatrix()
 
     intersect = @computeHit(laserContainer)
 

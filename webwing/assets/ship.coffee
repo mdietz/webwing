@@ -54,7 +54,7 @@ class window.Ship
       @focus = @targets[0]
 
   resetPos: () =>
-    @model.position = @initPos
+    @model.position = @initPos.clone()
 
   resetRot: () =>
     @model.quaternion.set(0,0,0,1)
