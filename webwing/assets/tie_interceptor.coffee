@@ -49,6 +49,7 @@ class window.TieIn extends Ship
       @model.remove(explosionSprite)
       @reset()
     )
+    window.Sound.playSound(window.Sound.explodeSound, 0.45)
     tween.start()
 
   addTargetSprite: () =>
@@ -217,6 +218,8 @@ class window.TieIn extends Ship
       setTimeout(() =>
         @laserCleanup(laserContainer)
       , tweentime)
+
+    window.Sound.playSound(window.Sound.blasterSound, 0.03)
 
     setTimeout(() =>
       if @dir == 1

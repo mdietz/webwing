@@ -136,6 +136,8 @@ class window.Corvette extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
+    window.Sound.playSound(window.Sound.blasterSound, 0.03)
+
     setTimeout(() =>
       @fireDouble()
     , tweentime/4);

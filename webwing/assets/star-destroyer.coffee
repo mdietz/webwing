@@ -77,6 +77,8 @@ class window.SD extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
+    window.Sound.playSound(window.Sound.blasterSound, 0.03)
+
     setTimeout(() =>
       @fireSingle()
     , tweentime/16);

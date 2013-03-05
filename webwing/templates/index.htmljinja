@@ -59,6 +59,8 @@
 
     function init() {
 
+        window.Sound.init();
+
         camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 200000 );
         camera.position.z = -50;
         camera.position.y = 5;
