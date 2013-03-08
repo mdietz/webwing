@@ -1,0 +1,58 @@
+@import "nib"
+
+flex-version = flex
+
+global-reset()
+reset-html5()
+
+light-grey = #FAFAFA
+med-grey = #C9C9C9
+dark-grey = #333333
+dark-hover-grey = #B3B3B3
+dark-active-grey = #DDD
+border-grey = 1px solid med-grey
+accent-blue = #4782B4
+sans-font-family = "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif
+mono-font-family = "Cousine", monospace
+
+* {
+  margin: 0
+  padding: 0
+}
+
+// Unfortunately nib has no selection mixin
+::selection { background: lighten(accent-blue, 80%) }
+::-moz-selection { background: lighten(accent-blue, 80%) }
+
+body
+  background-color: #ffffff
+  margin: 0px
+  width: 100%
+  height: 100%
+  overflow: hidden
+
+.circle
+  border-radius: 50%
+
+.cockpit-overlay
+  width: 100%
+  height: 100%
+  z-index: 9000
+  .target-display
+    width: 200px
+    height: 200px
+    transform: perspective( 400px ) rotateX( 45deg )
+    absolute: bottom
+    margin-left: auto
+    margin-right: auto
+    background-color: dark-grey
+  .radar-front
+    width: 100px
+    height: 100px
+    absolute: top right
+    background-color: darken(accent-blue, 50%)
+  .radar-back
+    width: 100px
+    height: 100px
+    absolute: top left
+    background-color: darken(accent-blue, 50%)

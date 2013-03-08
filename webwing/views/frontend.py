@@ -39,9 +39,9 @@ def index():
     shader_content = read_shader(shader + ".shader")
     shaders.append((shader, shader_content))
 
-  coffee_files = ["flight_controls", "sound", "util", "ship", "xwing", "tie_interceptor", "star-destroyer", "corvette"]
+  coffee_files = ["flight_controls", "cockpit", "sound", "util", "ship", "xwing", "tie_interceptor", "star-destroyer", "corvette"]
 
-  stylus_files = []
+  stylus_files = ["style"]
 
   return render_template("index.htmljinja",
                          mustache_templates=mustache_templates,

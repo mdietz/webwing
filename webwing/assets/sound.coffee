@@ -17,13 +17,13 @@ class window.Sound
   	  @soundOn = false
 
     if Audio != undefined
-      @blasterSound = new Audio("static/snd/blaster.ogg");
+      @blasterSound = new Audio("static/snd/xwing-laser.ogg");
       @explodeSound = new Audio("static/snd/explode.ogg");
 
       @worldMusic = new Audio("static/snd/music.ogg");
       @worldMusic.volume = 0.1;
       @worldMusic.loop = true;
-      @worldMusic.play();
+      #@worldMusic.play();
 
   @toggleSound: (bool) =>
 	  @soundOn = bool

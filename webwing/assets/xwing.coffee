@@ -10,8 +10,8 @@ class window.XWing extends Ship
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
-      @addThrust()
-      @addCrosshair()
+      #@addThrust()
+      #@addCrosshair()
       @createBoundingSphere(15, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1.0, 0.5, 1.0))
       @resetPos()
       @resetRot()

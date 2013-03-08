@@ -1,0 +1,8 @@
+{
+  "name": "webwing",
+  "version": "1.0.0",
+  "dependencies": {
+    "stylus": "0.31.x",
+    "nib": "0.9.1"
+  }
+}

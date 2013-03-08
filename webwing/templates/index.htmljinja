@@ -34,13 +34,6 @@
   {% for shader, shader_content in shaders %}
     {{ shader_content|safe }}
   {% endfor %}
-  <style type="text/css">
-    body {
-      background-color: #ffffff;
-      margin: 0px;
-      overflow: hidden;
-    }
-  </style>
   <script charset="utf-8">
     $(function() {
 
@@ -60,12 +53,12 @@
     function init() {
 
         window.Sound.init();
+        window.Cockpit.init();
 
         camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 200000 );
-        camera.position.z = -50;
-        camera.position.y = 5;
+        camera.position.z = 0;
+        camera.position.y = 0;
         camera.position.x = 0;
-        //camera.rotation.set(0, Math.PI, 0);
 
         scene = new THREE.Scene();
         window.scene = scene;
@@ -93,22 +86,25 @@
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
         corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
         sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
-        tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
-        tie2 = new TieIn("tie2", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
-        tie3 = new TieIn("tie3", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
-        tie4 = new TieIn("tie4", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
-        tie5 = new TieIn("tie5", new THREE.Vector3(200,-200,4000), new THREE.Vector3(0,0,0))
-        tie6 = new TieIn("tie6", new THREE.Vector3(-200,200,4000), new THREE.Vector3(0,0,0))
-        tie7 = new TieIn("tie7", new THREE.Vector3(200,200,4000), new THREE.Vector3(0,0,0))
-        tie8 = new TieIn("tie8", new THREE.Vector3(-200,-200,4000), new THREE.Vector3(0,0,0))
+        //tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
+        //tie2 = new TieIn("tie2", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
+        //tie3 = new TieIn("tie3", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
+        //tie4 = new TieIn("tie4", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
+        //tie5 = new TieIn("tie5", new THREE.Vector3(200,-200,4000), new THREE.Vector3(0,0,0))
+        //tie6 = new TieIn("tie6", new THREE.Vector3(-200,200,4000), new THREE.Vector3(0,0,0))
+        //tie7 = new TieIn("tie7", new THREE.Vector3(200,200,4000), new THREE.Vector3(0,0,0))
+        //tie8 = new TieIn("tie8", new THREE.Vector3(-200,-200,4000), new THREE.Vector3(0,0,0))
 
         xwing.load(function(loadedShip){
           console.log(xwing);
           xwing.model.add(camera);
           camera.rotation.set(0, Math.PI, 0);
-          camera.lookAt( xwing.model.position );
+          //camera.lookAt( xwing.model.position );
           window.FlightControls.init(xwing);
           window.ships.push(xwing);
+          xwing.model.children[0].traverse(function (node) {
+            node.visible = false;
+          });
           corvette.load(function(loadedShip2){
             console.log(corvette);
             //Util.rotObj(corvette.model, Util.yAxis, Math.PI/2);
@@ -116,7 +112,8 @@
             sd.load(function(loadedShip3){
               window.ships.push(sd);
               Util.rotObj(sd.model, Util.yAxis, Math.PI/2);
-              tie1.load(function(loadedShip4){
+              animate();
+              /*tie1.load(function(loadedShip4){
                 Util.rotObj(tie1.model, Util.yAxis, Math.PI);
                 window.ships.push(tie1);
                 tie2.load(function(loadedShip5){
@@ -148,7 +145,7 @@
                     });
                  });
                 });
-              });
+              });*/
             });
           });
         });
@@ -208,46 +205,46 @@
 
         if (!firing){
             //xwing.fireDouble();
-            tie1.fireDouble();
-            tie2.fireDouble();
-            tie3.fireDouble();
-            tie4.fireDouble();
-            tie5.fireDouble();
-            tie6.fireDouble();
-            tie7.fireDouble();
-            tie8.fireDouble();
-            corvette.addTarget(sd);
-            corvette.addTarget(tie1);
-            corvette.addTarget(tie2);
-            corvette.addTarget(tie3);
-            corvette.addTarget(tie4);
-            corvette.addTarget(tie5);
-            corvette.addTarget(tie6);
-            corvette.addTarget(tie7);
-            corvette.addTarget(tie8);
+            //tie1.fireDouble();
+            //tie2.fireDouble();
+            //tie3.fireDouble();
+            //tie4.fireDouble();
+            //tie5.fireDouble();
+            //tie6.fireDouble();
+            //tie7.fireDouble();
+            //tie8.fireDouble();
+            //corvette.addTarget(sd);
+            //corvette.addTarget(tie1);
+            //corvette.addTarget(tie2);
+            //corvette.addTarget(tie3);
+            //corvette.addTarget(tie4);
+            //corvette.addTarget(tie5);
+            //corvette.addTarget(tie6);
+            //corvette.addTarget(tie7);
+            //corvette.addTarget(tie8);
             corvette.setSpeed(100);
-            xwing.addTarget(tie1);
-            tie1.setAsPlayerTarget();
-            tie1.addTarget(corvette);
-            tie1.autoPilot();
-            tie2.addTarget(corvette);
-            tie2.autoPilot();
-            tie3.addTarget(corvette);
-            tie3.autoPilot();
-            tie4.addTarget(corvette);
-            tie4.autoPilot();
-            tie5.addTarget(corvette);
-            tie5.autoPilot();
-            tie6.addTarget(corvette);
-            tie6.autoPilot();
-            tie7.addTarget(corvette);
-            tie7.autoPilot();
-            tie8.addTarget(corvette);
-            tie8.autoPilot();
+            //xwing.addTarget(tie1);
+            //tie1.setAsPlayerTarget();
+            //tie1.addTarget(corvette);
+            //tie1.autoPilot();
+            //tie2.addTarget(corvette);
+            //tie2.autoPilot();
+            //tie3.addTarget(corvette);
+            //tie3.autoPilot();
+            //tie4.addTarget(corvette);
+            //tie4.autoPilot();
+            //tie5.addTarget(corvette);
+            //tie5.autoPilot();
+            //tie6.addTarget(corvette);
+            //tie6.autoPilot();
+            //tie7.addTarget(corvette);
+            //tie7.autoPilot();
+            //tie8.addTarget(corvette);
+            //tie8.autoPilot();
             //sd.addTarget(xwing);
-            sd.addTarget(corvette);
-            corvette.fireDouble();
-            sd.fireSingle();
+            //sd.addTarget(corvette);
+            //corvette.fireDouble();
+            //sd.fireSingle();
             firing = true;
         } else {
 
@@ -258,5 +255,7 @@
   </script>
 </head>
 <body>
+  <div class='cockpit-overlay'>
+  </div>
 </body>
 </html>
