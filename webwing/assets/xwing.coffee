@@ -152,7 +152,7 @@ class window.XWing extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
-    window.Sound.playSound(window.Sound.blasterSound, 0.03)
+    window.Sound.playSound(window.Sound.blasterSound, 0.2)
 
     setTimeout(() =>
       if window.FlightControls.spaceIsDown

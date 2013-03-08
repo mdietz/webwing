@@ -4,7 +4,7 @@
 class window.Sound
 
   @init: () =>
-  	@numOfChannels = 6
+  	@numOfChannels = 31
   	@audiochannels = []
   	for i in [0..@numOfChannels]
   		@audiochannels[i] = new Array()
