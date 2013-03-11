@@ -16,6 +16,7 @@ class window.Ship
     @focus = null
     @range = 1000
     @boundingSphere = null
+    @viewDist = 50
     @shieldOn = [false, false, false, false, false, false, false, false]
 
   load: (onLoaded) =>

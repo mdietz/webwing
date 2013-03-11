@@ -39,6 +39,8 @@
 
     var camera, scene, renderer, loader;
     var corvette, xwing;
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
     var FlightControls;
     var camControls;
     var stats;
@@ -47,18 +49,61 @@
     window.bounds = [];
     var start = Date.now();
     var mesh, material;
+    var views = [
+        {
+          left: 0,
+          bottom: 0,
+          center: false,
+          width: 1,
+          height: 1,
+          eye: [ 0, 0, 0 ],
+          up: [ 0, 1, 0 ],
+          depth: 200000,
+          fov: 60,
+          background: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
+          updateCamera: function ( camera, scene ) {
+          }
+        }/*,
+        {
+          left: 0,
+          bottom: .1,
+          center: true,
+          width: .2,
+          height: .3,
+          eye: [ 0, 0, 0 ],
+          up: [ 0, 1, 0 ],
+          depth: 2000,
+          fov: 45,
+          background: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+          updateCamera: function ( camera, scene ) {
+            camera.position = window.FlightControls.playerShip.targets[0].model.position.clone();
+            camera.lookAt( window.FlightControls.playerShip.model.position.clone() );
+            camera.updateMatrix();
+            camera.translateZ(-1*window.FlightControls.playerShip.targets[0].viewDist);
+            camera.lookAt( window.FlightControls.playerShip.targets[0].model.position.clone() );
+          }
+        }*/
+      ];
 
     init();
 
     function init() {
 
         window.Sound.init();
-        window.Cockpit.init();
+        //window.Cockpit.init();
 
-        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 200000 );
-        camera.position.z = 0;
-        camera.position.y = 0;
-        camera.position.x = 0;
+        for (var ii =  0; ii < views.length; ++ii ) {
+
+          var view = views[ii];
+          camera = new THREE.PerspectiveCamera( view.fov, window.innerWidth / window.innerHeight, 1, view.depth );
+          camera.position.x = view.eye[ 0 ];
+          camera.position.y = view.eye[ 1 ];
+          camera.position.z = view.eye[ 2 ];
+          camera.up.x = view.up[ 0 ];
+          camera.up.y = view.up[ 1 ];
+          camera.up.z = view.up[ 2 ];
+          view.camera = camera;
+        }
 
         scene = new THREE.Scene();
         window.scene = scene;
@@ -70,7 +115,7 @@
         directionalLight.position.set( 0, 1, -1 );
         scene.add( directionalLight );
 
-        map_material = new THREE.MeshBasicMaterial({
+        /*map_material = new THREE.MeshBasicMaterial({
           map: THREE.ImageUtils.loadTexture('static/img/starmap_2048.png'),
           opacity: 1.0,
           blending: THREE.AdditiveBlending
@@ -81,12 +126,31 @@
         starsphere.flipsided = true;
         starsphere.scale.x = -1;
 
-        scene.add(starsphere);
+        scene.add(starsphere);*/
+
+        var url = "static/img/starfield.png";
+        var urls = [ url, url, url, url, url, url ];
+        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+
+        var cubeShader = THREE.ShaderLib["cube"];
+        var cubeUniforms = THREE.UniformsUtils.clone( cubeShader.uniforms );
+        cubeUniforms['tCube'].value = textureCube;
+        var cubeMaterial = new THREE.ShaderMaterial({
+            fragmentShader: cubeShader.fragmentShader,
+            vertexShader: cubeShader.vertexShader,
+            uniforms: cubeUniforms,
+            side: THREE.BackSide
+        });
+
+        // build the skybox Mesh 
+        var skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1), cubeMaterial );
+        // add it to the scene
+        scene.add( skyboxMesh );
 
         xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
         corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
         sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
-        //tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
+        tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
         //tie2 = new TieIn("tie2", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
         //tie3 = new TieIn("tie3", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
         //tie4 = new TieIn("tie4", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
@@ -97,8 +161,8 @@
 
         xwing.load(function(loadedShip){
           console.log(xwing);
-          xwing.model.add(camera);
-          camera.rotation.set(0, Math.PI, 0);
+          xwing.model.add(views[0].camera);
+          views[0].camera.rotation.set(0, Math.PI, 0);
           //camera.lookAt( xwing.model.position );
           window.FlightControls.init(xwing);
           window.ships.push(xwing);
@@ -112,11 +176,11 @@
             sd.load(function(loadedShip3){
               window.ships.push(sd);
               Util.rotObj(sd.model, Util.yAxis, Math.PI/2);
-              animate();
-              /*tie1.load(function(loadedShip4){
+              tie1.load(function(loadedShip4){
                 Util.rotObj(tie1.model, Util.yAxis, Math.PI);
                 window.ships.push(tie1);
-                tie2.load(function(loadedShip5){
+                animate();
+                /*tie2.load(function(loadedShip5){
                   Util.rotObj(tie2.model, Util.yAxis, Math.PI);
                   window.ships.push(tie2);
                   tie3.load(function(loadedShip6){
@@ -144,8 +208,8 @@
                       });
                     });
                  });
-                });
-              });*/
+                });*/
+              });
             });
           });
         });
@@ -191,21 +255,28 @@
 
     }
 
+    function updateSize() {
+      if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
+
+        windowWidth  = window.innerWidth;
+        windowHeight = window.innerHeight;
+
+        renderer.setSize ( windowWidth, windowHeight );
+
+      }
+    }
+
     function animate() {
+        updateSize();
+
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );
 
-        //material.uniforms[ 'time' ].value = .0005 * ( Date.now() - start );
-
         TWEEN.update();
-        //camControls.update();
-
-        renderer.render( scene, camera );
-        stats.update();
 
         if (!firing){
             //xwing.fireDouble();
-            //tie1.fireDouble();
+            tie1.fireDouble();
             //tie2.fireDouble();
             //tie3.fireDouble();
             //tie4.fireDouble();
@@ -223,10 +294,10 @@
             //corvette.addTarget(tie7);
             //corvette.addTarget(tie8);
             corvette.setSpeed(100);
-            //xwing.addTarget(tie1);
-            //tie1.setAsPlayerTarget();
-            //tie1.addTarget(corvette);
-            //tie1.autoPilot();
+            xwing.addTarget(corvette);
+            tie1.setAsPlayerTarget();
+            tie1.addTarget(corvette);
+            tie1.autoPilot();
             //tie2.addTarget(corvette);
             //tie2.autoPilot();
             //tie3.addTarget(corvette);
@@ -250,6 +321,38 @@
 
         }
 
+        for ( var ii = 0; ii < views.length; ++ii ) {
+
+          view = views[ii];
+          camera = view.camera;
+
+          view.updateCamera( camera, scene);
+
+          if(view.center) {
+            var left   = Math.floor( windowWidth/2 - (windowWidth*view.width)/2 );
+            var bottom = Math.floor( windowHeight * view.bottom );
+          } else {
+            var left   = Math.floor( windowWidth  * view.left );
+            var bottom = Math.floor( windowHeight * view.bottom );
+          }
+          var width  = Math.floor( windowWidth  * view.width );
+          var height = Math.floor( windowHeight * view.height );
+          renderer.setViewport( left, bottom, width, height );
+          renderer.setScissor( left, bottom, width, height );
+          renderer.enableScissorTest ( true );
+          renderer.setClearColor( view.background, view.background.a );
+
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+
+          renderer.render( scene, camera );
+        }
+
+        //material.uniforms[ 'time' ].value = .0005 * ( Date.now() - start );
+        //camControls.update();
+
+        //renderer.render( scene, camera );
+        stats.update();
     }
     })
   </script>

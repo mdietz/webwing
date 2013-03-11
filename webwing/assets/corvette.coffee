@@ -6,6 +6,7 @@ class window.Corvette extends Ship
     super(name, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
     @targetSprite = null
     @range = 10000
+    @viewDist = 250
 
   load: (onLoaded) =>
     super (ship) =>
