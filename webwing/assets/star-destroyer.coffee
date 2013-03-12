@@ -6,6 +6,7 @@ class window.SD extends Ship
     super(name, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
     @targetSprite = null
     @range = 10000
+    @shieldTimeout = 2000
 
   load: (onLoaded) =>
     super (ship) =>

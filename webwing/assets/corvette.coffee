@@ -7,6 +7,7 @@ class window.Corvette extends Ship
     @targetSprite = null
     @range = 10000
     @viewDist = 250
+    @shieldTimeout = 400
 
   load: (onLoaded) =>
     super (ship) =>

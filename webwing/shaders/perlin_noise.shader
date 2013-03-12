@@ -1,4 +1,4 @@
-<script type="x-shader/x-vertex" id="vertexShader">
+<script type="x-shader/x-vertex" id="perlin_vertex_shader">
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -226,7 +226,7 @@ void main() {
 
 </script>
 
-<script type="x-shader/x-vertex" id="fragmentShader">
+<script type="x-shader/x-vertex" id="perlin_fragment_sshader">
 
 varying vec2 vUv;
 uniform sampler2D tExplosion;
@@ -247,7 +247,7 @@ void main() {
 
 </script>
 
-<script type="x-shader/x-vertex" id="vertexShader">
+<script type="x-shader/x-vertex" id="perlin_vertex_shader">
 
 varying vec2 vUv;
 

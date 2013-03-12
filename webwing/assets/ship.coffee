@@ -16,6 +16,7 @@ class window.Ship
     @focus = null
     @range = 1000
     @boundingSphere = null
+    @shieldTimeout = 100
     @viewDist = 50
     @shieldOn = [false, false, false, false, false, false, false, false]
 
@@ -91,34 +92,44 @@ class window.Ship
 
   # parameters: sphere_radius, mesh_offsets, scale
   createBoundingSphere: (radius, offset, scale) =>
+    @radius = radius
     @boundingSphere = new THREE.Object3D()
     sphere = new THREE.SphereGeometry( radius, 12, 12 )
+    perlinTex = THREE.ImageUtils.loadTexture("static/img/simplex_noise.png")
+    simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
+    simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
+    shieldUniforms = {
+      time: window.time,
+      scale:  { type: "f", value: 10.0/radius }
+    }
     materials = [
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, side: THREE.BackSide } )
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      #new THREE.ShaderMaterial( { map: perlinTex , emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.2, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading } )
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.BackSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment })
     ]
     sphere.materials = materials
 
     sphere2 = new THREE.SphereGeometry( radius, 12, 12 )
     materials2 = [
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { visible: false } ),
-      new THREE.MeshLambertMaterial( { emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.1, side: THREE.FrontSide } )
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, visible: false, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment } ),
+      #new THREE.ShaderMaterial( { map: perlinTex , emissive: 0x0000ff, color: 0x0000ff, ambient: 0x0000ff, transparent: true, opacity: 0.2, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading } )
+      new THREE.ShaderMaterial( { transparent: true, opacity: 0.01, side: THREE.FrontSide, blending: THREE.AdditiveBlending, shading: THREE.SmoothShading, uniforms: shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment })
     ]
     sphere2.materials = materials2
     for face, i in sphere.faces
@@ -197,17 +208,17 @@ class window.Ship
   showShield: (index) =>
     i = @getSectorFromIndex(index)
     if !@shieldOn[index]
-      @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[9]
-      @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[9]
+      @boundingSphere.children[0].geometry.materials[i].visible = true
+      @boundingSphere.children[1].geometry.materials[i].visible = true
       @shieldOn[index] = true
       setTimeout(() =>
         @hideShield(index)
-      , 100)
+      , @shieldTimeout)
 
   hideShield: (index) =>
     i = @getSectorFromIndex(index)
-    @boundingSphere.children[0].geometry.materials[i] = @boundingSphere.children[0].geometry.materials[8]
-    @boundingSphere.children[1].geometry.materials[i] = @boundingSphere.children[1].geometry.materials[8]
+    @boundingSphere.children[0].geometry.materials[i].visible = false
+    @boundingSphere.children[1].geometry.materials[i].visible = false
     @shieldOn[index] = false
 
   addLaserRay: (startPos, orientationVector) =>

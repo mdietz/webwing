@@ -49,6 +49,8 @@
     window.bounds = [];
     var start = Date.now();
     var mesh, material;
+    var oldTime = new Date().getTime();
+
     var views = [
         {
           left: 0,
@@ -128,9 +130,22 @@
 
         scene.add(starsphere);*/
 
+        window.time = { type: "f", value: 1.0 };
+
+        var simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
+        var simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
+
+        //var simplexMaterial = new THREE.ShaderMaterial( { uniforms: window.shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment })
+
+        //var simplexSphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 12, 12), simplexMaterial );
+        //simplexSphere.position.set(0,0, 400);
+        // add it to the scene
+        //scene.add( simplexSphere );
+
         var url = "static/img/starfield.png";
         var urls = [ url, url, url, url, url, url ];
-        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+        var textureCube = THREE.ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
+        window.textureCube = textureCube;
 
         var cubeShader = THREE.ShaderLib["cube"];
         var cubeUniforms = THREE.UniformsUtils.clone( cubeShader.uniforms );
@@ -268,6 +283,12 @@
 
     function animate() {
         updateSize();
+
+        var time = new Date().getTime();
+        var delta = ( time - oldTime );
+        oldTime = time;
+
+        window.time.value += 0.275 * delta;
 
         // note: three.js includes requestAnimationFrame shim
         requestAnimationFrame( animate );

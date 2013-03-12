@@ -6,6 +6,7 @@ class window.XWing extends Ship
     @crosshair = null
     @nextLaser = 0
     @range = 10000
+    @shieldTimeout = 100
 
   load: (onLoaded) =>
     super (ship) =>

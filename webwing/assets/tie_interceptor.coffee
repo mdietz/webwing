@@ -13,6 +13,7 @@ class window.TieIn extends Ship
     @switch_far = false
     @range = 4000
     @targetSprite = null
+    @shieldTimeout = 100
 
   onHit: (faceIndex) =>
     @explode()
