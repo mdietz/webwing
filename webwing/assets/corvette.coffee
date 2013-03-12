@@ -14,7 +14,7 @@ class window.Corvette extends Ship
       @model.scale.set(0.2, 0.2, 0.2)
       @model.useQuaternion = true
       #@addTargetSprite()
-      @createBoundingSphere(400, new THREE.Vector3(0, 0, -60), new THREE.Vector3(0.8, 0.6, 2.0))
+      @createBoundingSphere(400, new THREE.Vector3(0, 0, -50), new THREE.Vector3(0.8, 0.6, 2.0))
       @resetPos()
       @resetRot()
       onLoaded(ship)

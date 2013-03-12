@@ -14,7 +14,7 @@ class window.SD extends Ship
       @model.useQuaternion = true
       Util.rotObj(@model.children[0], Util.yAxis, -Math.PI/2);
       @addTargetSprite()
-      @createBoundingSphere(16000, new THREE.Vector3(0, 3000, 5000), new THREE.Vector3(1.3, 0.8, 2.2))
+      @createBoundingSphere(17000, new THREE.Vector3(0, 3000, 5000), new THREE.Vector3(1.3, 0.8, 2.2))
       @resetPos()
       @resetRot()
       onLoaded(ship)
