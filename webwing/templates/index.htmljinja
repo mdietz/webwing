@@ -132,8 +132,8 @@
 
         window.time = { type: "f", value: 1.0 };
 
-        var simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
-        var simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
+        //var simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
+        //var simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
 
         //var simplexMaterial = new THREE.ShaderMaterial( { uniforms: window.shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment })
 
@@ -265,9 +265,29 @@
         stats.domElement.style.position = 'absolute';
         stats.domElement.style.top = '0px';
 
+        document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
+
+        var gui = new dat.GUI();
+        var windowF = gui.addFolder('Window');
+        windowF.open();
+        windowF.add(window.Sound, 'toggleSound');
+        windowF.add(renderer.domElement, 'webkitRequestPointerLock');
+        var tie1F = gui.addFolder('Tie1');
+        tie1F.add(tie1, 'autoPilot');
+        tie1F.add(tie1, 'fireDouble');
+
         document.body.appendChild( renderer.domElement );
         document.body.appendChild( stats.domElement );
 
+    }
+
+    function pointerLockChange() {
+      if(window.FlightControls.pointerLock == true) {
+        window.FlightControls.pointerLock = false;
+      }
+      else {
+        window.FlightControls.pointerLock = true;
+      }
     }
 
     function updateSize() {
@@ -297,7 +317,6 @@
 
         if (!firing){
             //xwing.fireDouble();
-            tie1.fireDouble();
             //tie2.fireDouble();
             //tie3.fireDouble();
             //tie4.fireDouble();
@@ -318,7 +337,7 @@
             xwing.addTarget(corvette);
             tie1.setAsPlayerTarget();
             tie1.addTarget(corvette);
-            tie1.autoPilot();
+            //tie1.autoPilot();
             //tie2.addTarget(corvette);
             //tie2.autoPilot();
             //tie3.addTarget(corvette);

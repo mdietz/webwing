@@ -28,10 +28,29 @@ class window.FlightControls
     newRot = newShip.quaternion.clone()
     newRot
 
+  @getUpdatedRotation2: () =>
+    newShip = @playerShip.model.clone()
+    if @yMovement > 0
+      Util.rotObj(newShip, Util.xAxis, Math.min((@yMovement/200.0)*Math.PI/30, Math.PI/30))
+    else
+      Util.rotObj(newShip, Util.xAxis, Math.max((@yMovement/200.0)*Math.PI/30, -Math.PI/30))
+
+    if @xMovement > 0
+      Util.rotObj(newShip, Util.yAxis, Math.max((@xMovement*-1.0/200.0)*Math.PI/30, -Math.PI/30))
+    else
+      Util.rotObj(newShip, Util.yAxis, Math.min((@xMovement*-1.0/200.0)*Math.PI/30, Math.PI/30))
+
+    newRot = newShip.quaternion.clone()
+    newRot
+
   @getNewTweens: =>
     newPos = @getUpdatedPosition()
     startPos = @playerShip.model.position
-    newRot = @getUpdatedRotation().normalize()
+    newRot = @playerShip.model.quaternion.clone().normalize()
+    if @pointerLock
+      newRot = @getUpdatedRotation2().normalize()
+    else
+      newRot = @getUpdatedRotation().normalize()
     toVals = {position:{x:newPos.x, y:newPos.y, z:newPos.z}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
 
     @pathTween = new TWEEN.Tween(@playerShip.model)
@@ -53,11 +72,16 @@ class window.FlightControls
     @spaceIsDown = false
     @speedUp = false
     @speedDown = false
+    @pointerLock = false
+    @xMovement = 0
+    @yMovement = 0
 
     @getNewTweens()
+    @recomputeTweens()
 
     document.addEventListener('keydown', @onDocumentKeyDown, false);
-    document.addEventListener('keyup', @onDocumentKeyUp, false);
+    document.addEventListener('keyup', @onDocumentKeyUp, false)
+    document.addEventListener("mousemove", @onMouseMove, false)
 
   @recomputeTweens: () =>
     @pathTween.stop()
@@ -130,3 +154,18 @@ class window.FlightControls
         @recomputeTweens()
     if !@upIsDown and !@downIsDown and !@rightIsDown and !@leftIsDown and !@rollRight and !@rollLeft and @playerShip.speed == 0
       @pathTween.stop()
+
+  @onMouseMove: (e) =>
+    movementX = e.movementX       ||
+                e.mozMovementX    ||
+                e.webkitMovementX ||
+                0
+    movementY = e.movementY       ||
+                e.mozMovementY    ||
+                e.webkitMovementY ||
+                0
+    if @pointerLock
+      @xMovement = Math.max(Math.min(@xMovement + movementX, 200), -200)
+      @yMovement = Math.max(Math.min(@yMovement + movementY, 200), -200)
+      console.log("movementX=" + movementX, "movementY=" + movementY)
+      console.log("xVal=" + @xMovement, "yVal=" + @yMovement)

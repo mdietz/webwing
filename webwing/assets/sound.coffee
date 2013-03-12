@@ -31,10 +31,10 @@ class window.Sound
   	if (Audio == undefined)
   		@soundOn = false
 
-  	if !@soundOn
+  	###if !@soundOn
   		@worldMusic.pause();
   	else
-  		@worldMusic.play();
+  		@worldMusic.play();###
 
   @playSound: (id, vol) =>
   	if !@soundOn || Audio == undefined

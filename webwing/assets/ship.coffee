@@ -97,8 +97,8 @@ class window.Ship
     @boundingSphere = new THREE.Object3D()
     sphere = new THREE.SphereGeometry( radius, 8, 8 )
     perlinTex = THREE.ImageUtils.loadTexture("static/img/simplex_noise.png")
-    simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
-    simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
+    #simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
+    #simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
     shieldUniforms = {
       time: window.time,
       scale:  { type: "f", value: 1.0/radius }
