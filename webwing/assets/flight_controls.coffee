@@ -31,14 +31,14 @@ class window.FlightControls
   @getUpdatedRotation2: () =>
     newShip = @playerShip.model.clone()
     if @yMovement > 0
-      Util.rotObj(newShip, Util.xAxis, Math.min((@yMovement/200.0)*Math.PI/30, Math.PI/30))
+      Util.rotObj(newShip, Util.xAxis, Math.min((@yMovement*@yMovement/40000.0)*Math.PI/30, Math.PI/30))
     else
-      Util.rotObj(newShip, Util.xAxis, Math.max((@yMovement/200.0)*Math.PI/30, -Math.PI/30))
+      Util.rotObj(newShip, Util.xAxis, Math.max((@yMovement*@yMovement*-1.0/40000.0)*Math.PI/30, -Math.PI/30))
 
     if @xMovement > 0
-      Util.rotObj(newShip, Util.yAxis, Math.max((@xMovement*-1.0/200.0)*Math.PI/30, -Math.PI/30))
+      Util.rotObj(newShip, Util.yAxis, Math.max((@xMovement*@xMovement*-1.0/40000.0)*Math.PI/30, -Math.PI/30))
     else
-      Util.rotObj(newShip, Util.yAxis, Math.min((@xMovement*-1.0/200.0)*Math.PI/30, Math.PI/30))
+      Util.rotObj(newShip, Util.yAxis, Math.min((@xMovement*@xMovement/40000.0)*Math.PI/30, Math.PI/30))
 
     newRot = newShip.quaternion.clone()
     newRot
