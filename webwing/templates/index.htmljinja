@@ -50,122 +50,39 @@
     var start = Date.now();
     var mesh, material;
     var oldTime = new Date().getTime();
+    var animationToggle = false;
 
-    var views = [
-        {
-          left: 0,
-          bottom: 0,
-          center: false,
-          width: 1,
-          height: 1,
-          eye: [ 0, 0, 0 ],
-          up: [ 0, 1, 0 ],
-          depth: 200000,
-          fov: 60,
-          background: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
-          updateCamera: function ( camera, scene ) {
-          }
-        }/*,
-        {
-          left: 0,
-          bottom: .1,
-          center: true,
-          width: .2,
-          height: .3,
-          eye: [ 0, 0, 0 ],
-          up: [ 0, 1, 0 ],
-          depth: 2000,
-          fov: 45,
-          background: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
-          updateCamera: function ( camera, scene ) {
-            camera.position = window.FlightControls.playerShip.targets[0].model.position.clone();
-            camera.lookAt( window.FlightControls.playerShip.model.position.clone() );
-            camera.updateMatrix();
-            camera.translateZ(-1*window.FlightControls.playerShip.targets[0].viewDist);
-            camera.lookAt( window.FlightControls.playerShip.targets[0].model.position.clone() );
-          }
-        }*/
-      ];
+    /*
+    {
+      left: 0,
+      bottom: .1,
+      center: true,
+      width: .2,
+      height: .3,
+      eye: [ 0, 0, 0 ],
+      up: [ 0, 1, 0 ],
+      depth: 2000,
+      fov: 45,
+      background: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+      updateCamera: function ( camera, scene ) {
+        camera.position = window.FlightControls.playerShip.targets[0].model.position.clone();
+        camera.lookAt( window.FlightControls.playerShip.model.position.clone() );
+        camera.updateMatrix();
+        camera.translateZ(-1*window.FlightControls.playerShip.targets[0].viewDist);
+        camera.lookAt( window.FlightControls.playerShip.targets[0].model.position.clone() );
+      }
+    }*/
 
     init();
 
     function init() {
 
-        window.Sound.init();
-        //window.Cockpit.init();
+        //window.time = { type: "f", value: 1.0 };
 
-        for (var ii =  0; ii < views.length; ++ii ) {
-
-          var view = views[ii];
-          camera = new THREE.PerspectiveCamera( view.fov, window.innerWidth / window.innerHeight, 1, view.depth );
-          camera.position.x = view.eye[ 0 ];
-          camera.position.y = view.eye[ 1 ];
-          camera.position.z = view.eye[ 2 ];
-          camera.up.x = view.up[ 0 ];
-          camera.up.y = view.up[ 1 ];
-          camera.up.z = view.up[ 2 ];
-          view.camera = camera;
-        }
-
-        scene = new THREE.Scene();
-        window.scene = scene;
-
-        var ambient = new THREE.AmbientLight( 0x333333 );
-        scene.add( ambient );
-
-        var directionalLight = new THREE.DirectionalLight( 0xaaaaaa );
-        directionalLight.position.set( 0, 1, -1 );
-        scene.add( directionalLight );
-
-        /*map_material = new THREE.MeshBasicMaterial({
-          map: THREE.ImageUtils.loadTexture('static/img/starmap_2048.png'),
-          opacity: 1.0,
-          blending: THREE.AdditiveBlending
-        }),
-        geometry = new THREE.SphereGeometry(100000,32,16);
-
-        var starsphere = new THREE.Mesh(geometry, map_material);
-        starsphere.flipsided = true;
-        starsphere.scale.x = -1;
-
-        scene.add(starsphere);*/
-
-        window.time = { type: "f", value: 1.0 };
-
-        //var simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
-        //var simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
-
-        //var simplexMaterial = new THREE.ShaderMaterial( { uniforms: window.shieldUniforms, vertexShader: simplex_vertex, fragmentShader: simplex_fragment })
-
-        //var simplexSphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 12, 12), simplexMaterial );
-        //simplexSphere.position.set(0,0, 400);
-        // add it to the scene
-        //scene.add( simplexSphere );
-
-        var url = "static/img/starfield.png";
-        var urls = [ url, url, url, url, url, url ];
-        var textureCube = THREE.ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
-        window.textureCube = textureCube;
-
-        var cubeShader = THREE.ShaderLib["cube"];
-        var cubeUniforms = THREE.UniformsUtils.clone( cubeShader.uniforms );
-        cubeUniforms['tCube'].value = textureCube;
-        var cubeMaterial = new THREE.ShaderMaterial({
-            fragmentShader: cubeShader.fragmentShader,
-            vertexShader: cubeShader.vertexShader,
-            uniforms: cubeUniforms,
-            side: THREE.BackSide
-        });
-
-        // build the skybox Mesh 
-        var skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1), cubeMaterial );
-        // add it to the scene
-        scene.add( skyboxMesh );
-
-        xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
-        corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
-        sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
-        tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
+        //xwing = new XWing("xwing", new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0))
+        //corvette = new Corvette("corvette", new THREE.Vector3(100,-50,200), new THREE.Vector3(0,0,0))
+        //sd = new SD("sd", new THREE.Vector3(0,0,6000), new THREE.Vector3(0,0,0))
+        //tie1 = new TieIn("tie1", new THREE.Vector3(100,-100,4000), new THREE.Vector3(0,0,0))
         //tie2 = new TieIn("tie2", new THREE.Vector3(-100,100,4000), new THREE.Vector3(0,0,0))
         //tie3 = new TieIn("tie3", new THREE.Vector3(100,100,4000), new THREE.Vector3(0,0,0))
         //tie4 = new TieIn("tie4", new THREE.Vector3(-100,-100,4000), new THREE.Vector3(0,0,0))
@@ -174,7 +91,7 @@
         //tie7 = new TieIn("tie7", new THREE.Vector3(200,200,4000), new THREE.Vector3(0,0,0))
         //tie8 = new TieIn("tie8", new THREE.Vector3(-200,-200,4000), new THREE.Vector3(0,0,0))
 
-        xwing.load(function(loadedShip){
+        /*xwing.load(function(loadedShip){
           console.log(xwing);
           xwing.model.add(views[0].camera);
           views[0].camera.rotation.set(0, Math.PI, 0);
@@ -223,11 +140,11 @@
                       });
                     });
                  });
-                });*/
+                });
               });
             });
           });
-        });
+        });*/
 
         /*material = new THREE.ShaderMaterial( {
 
@@ -254,30 +171,7 @@
 
                       scene.add( mesh );*/
 
-        renderer = new THREE.WebGLRenderer({'antialias':true});
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.sortObjects = false;
-
-        //camControls = new THREE.TrackballControls( camera );
-        //camControls.target.set(0,0,0);
-
-        stats = new Stats();
-        stats.domElement.style.position = 'absolute';
-        stats.domElement.style.top = '0px';
-
-        document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
-
-        var gui = new dat.GUI();
-        var windowF = gui.addFolder('Window');
-        windowF.open();
-        windowF.add(window.Sound, 'toggleSound');
-        windowF.add(renderer.domElement, 'webkitRequestPointerLock');
-        var tie1F = gui.addFolder('Tie1');
-        tie1F.add(tie1, 'autoPilot');
-        tie1F.add(tie1, 'fireDouble');
-
-        document.body.appendChild( renderer.domElement );
-        document.body.appendChild( stats.domElement );
+      window.defaultWorld = new window.World("default");
 
     }
 
@@ -311,7 +205,9 @@
         window.time.value += 0.275 * delta;
 
         // note: three.js includes requestAnimationFrame shim
-        requestAnimationFrame( animate );
+        if(animationToggle){
+          requestAnimationFrame( animate );
+        }
 
         TWEEN.update();
 

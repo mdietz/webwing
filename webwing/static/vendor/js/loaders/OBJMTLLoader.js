@@ -133,7 +133,7 @@ THREE.OBJMTLLoader.prototype = {
 								var material = materialsCreator.create( object.material.name );
 								if ( material ) {
 
-									console.log(material.name);
+									//console.log(material.name);
 									object.material = material;
 
 								}

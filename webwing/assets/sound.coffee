@@ -3,7 +3,7 @@
 
 class window.Sound
 
-  @init: () =>
+  constructor: () ->
   	@numOfChannels = 31
   	@audiochannels = []
   	for i in [0..@numOfChannels]
@@ -25,7 +25,7 @@ class window.Sound
       @worldMusic.loop = true;
       #@worldMusic.play();
 
-  @toggleSound: (bool) =>
+  toggleSound: (bool) =>
 	  @soundOn = bool
 
   	if (Audio == undefined)
@@ -36,7 +36,7 @@ class window.Sound
   	else
   		@worldMusic.play();###
 
-  @playSound: (id, vol) =>
+  playSound: (id, vol) =>
   	if !@soundOn || Audio == undefined
   		return
 

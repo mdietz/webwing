@@ -1,11 +1,33 @@
 class window.FlightControls
 
-  @getUpdatedPosition: () =>
+  constructor: (@playerShip) ->
+    @leftIsDown = false
+    @upIsDown = false
+    @rightIsDown = false
+    @downIsDown = false
+    @rollRight = false
+    @rollLeft = false
+    @spaceIsDown = false
+    @speedUp = false
+    @speedDown = false
+    @pointerLock = false
+    @xMovement = 0
+    @yMovement = 0
+
+    @getNewTweens()
+    @recomputeTweens()
+
+    document.addEventListener('keydown', @onDocumentKeyDown, false);
+    document.addEventListener('keyup', @onDocumentKeyUp, false)
+    document.addEventListener("mousemove", @onMouseMove, false)
+
+
+  getUpdatedPosition: () =>
     newShip = @playerShip.model.clone()
     newShip.translateZ(@playerShip.speed/10)
     newShip.position.clone()
 
-  @getUpdatedRotation: () =>
+  getUpdatedRotation: () =>
     newShip = @playerShip.model.clone()
     if @leftIsDown
       if @upIsDown or @downIsDown
@@ -28,7 +50,7 @@ class window.FlightControls
     newRot = newShip.quaternion.clone()
     newRot
 
-  @getUpdatedRotation2: () =>
+  getUpdatedRotation2: () =>
     newShip = @playerShip.model.clone()
     if @yMovement > 0
       Util.rotObj(newShip, Util.xAxis, Math.min((@yMovement*@yMovement/40000.0)*Math.PI/30, Math.PI/30))
@@ -43,7 +65,7 @@ class window.FlightControls
     newRot = newShip.quaternion.clone()
     newRot
 
-  @getNewTweens: =>
+  getNewTweens: =>
     newPos = @getUpdatedPosition()
     startPos = @playerShip.model.position
     newRot = @playerShip.model.quaternion.clone().normalize()
@@ -62,33 +84,12 @@ class window.FlightControls
       @pathTween.start()
     )
 
-  @init: (@playerShip) =>
-    @leftIsDown = false
-    @upIsDown = false
-    @rightIsDown = false
-    @downIsDown = false
-    @rollRight = false
-    @rollLeft = false
-    @spaceIsDown = false
-    @speedUp = false
-    @speedDown = false
-    @pointerLock = false
-    @xMovement = 0
-    @yMovement = 0
-
-    @getNewTweens()
-    @recomputeTweens()
-
-    document.addEventListener('keydown', @onDocumentKeyDown, false);
-    document.addEventListener('keyup', @onDocumentKeyUp, false)
-    document.addEventListener("mousemove", @onMouseMove, false)
-
-  @recomputeTweens: () =>
+  recomputeTweens: () =>
     @pathTween.stop()
     @getNewTweens()
     @pathTween.start()
 
-  @onDocumentKeyDown: (event) =>
+  onDocumentKeyDown: (event) =>
     switch event.keyCode
       when 32
         if !@spaceIsDown
@@ -130,7 +131,7 @@ class window.FlightControls
           @playerShip.speed -= 20
           @recomputeTweens()
 
-  @onDocumentKeyUp: (event) =>
+  onDocumentKeyUp: (event) =>
     switch event.keyCode
       when 32
         @spaceIsDown = false
@@ -152,10 +153,10 @@ class window.FlightControls
       when 81
         @rollLeft = false
         @recomputeTweens()
-    if !@upIsDown and !@downIsDown and !@rightIsDown and !@leftIsDown and !@rollRight and !@rollLeft and @playerShip.speed == 0
+    if !@upIsDown and !@downIsDown and !@rightIsDown and !@leftIsDown and !@rollRight and !@rollLeft and !@pointerLock and @playerShip.speed == 0
       @pathTween.stop()
 
-  @onMouseMove: (e) =>
+  onMouseMove: (e) =>
     movementX = e.movementX       ||
                 e.mozMovementX    ||
                 e.webkitMovementX ||

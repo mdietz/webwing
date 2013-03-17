@@ -22,15 +22,13 @@ class window.Ship
     @simpleShields = true
 
   load: (onLoaded) =>
-    console.log("inLoad")
     if /.obj$/.test(@objLoc)
       loader = new THREE.OBJMTLLoader()
       loader.addEventListener('load', (event) =>
-        console.log("loading")
         object = event.content
         @model = new THREE.Object3D()
         @model.add(object)
-        scene.add(@model)
+        #scene.add(@model)
         @loaded = true
         onLoaded(this)
       )
@@ -39,14 +37,12 @@ class window.Ship
       loader = new THREE.ColladaLoader()
       loader.options.convertUpAxis = true;
       loader.load(@objLoc, (event) =>
-        console.log("collada loading")
         object = event.scene
         while object.children.length == 1
-          console.log(object)
           object = object.children[0]
         @model = new THREE.Object3D()
         @model.add(object)
-        scene.add(@model)
+        #scene.add(@model)
         @loaded = true
         onLoaded(this)
       )
