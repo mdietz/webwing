@@ -1,17 +1,17 @@
 class window.XWing extends Ship
 
-  constructor: (name, initPos, initRot) ->
-    console.log("xwing const")
-    super(name, initPos.clone(), initRot.clone(), "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
+  constructor: (name, world, initPos, initRot) ->
+    super(name, world, initPos.clone(), initRot.clone(), "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
     @crosshair = null
     @nextLaser = 0
     @range = 10000
     @shieldTimeout = 100
+    console.log(@world)
 
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
-      #@addThrust()
+      @addThrust()
       #@addCrosshair()
       @createBoundingSphere(15, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1.0, 0.5, 1.0))
       @resetPos()
@@ -68,7 +68,7 @@ class window.XWing extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh)
     switch @nextLaser
@@ -104,7 +104,7 @@ class window.XWing extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh1 = @laserGeom.clone()
     laserContainer.add(laserMesh1)
     laserMesh2 = @laserGeom.clone()
@@ -153,10 +153,10 @@ class window.XWing extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
-    window.Sound.playSound(window.Sound.blasterSound, 0.2)
+    @world.sound.playSound(@world.sound.blasterSound, 0.2)
 
     setTimeout(() =>
-      if window.FlightControls.spaceIsDown
+      if @world.flightControls.spaceIsDown
         @fireDouble()
     , tweentime/4)
 
@@ -167,7 +167,7 @@ class window.XWing extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh1)
     laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
@@ -218,4 +218,4 @@ class window.XWing extends Ship
     , tweentime)
 
   laserCleanup: (container) =>
-    window.scene.remove(container)
+    @world.scene.remove(container)

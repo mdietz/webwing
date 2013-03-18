@@ -25,7 +25,7 @@ class window.World
                         pos: {
                           x: 0,
                           y: 0,
-                          z: 100
+                          z: 1000
                         },
                         rot: {
                           x: 0,
@@ -68,6 +68,7 @@ class window.World
     @renderer.setSize( @windowWidth, @windowHeight );
     @sound = new window.Sound()
     @loadedShips = 0
+    @wireframe = false
     @stats = new Stats()
     @initStats()
     @initCameras()
@@ -142,6 +143,7 @@ class window.World
     @windowF.open()
     @windowF.add(@sound, 'toggleSound')
     @windowF.add(this, 'toggleAnimation')
+    @windowF.add(this, 'wireframeToggle')
     @windowF.add(@renderer.domElement, 'webkitRequestPointerLock')
 
   pointerLockChange: () =>
@@ -150,6 +152,13 @@ class window.World
     else
       @flightControls.pointerLock = true
 
+  wireframeToggle: () =>
+    if !@wireframe
+      @wireframe = true
+      @scene.overrideMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+    else
+      @wireframe = false
+      @scene.overrideMaterial = null
 
   loadShips: () =>
     for ship in @initShips
@@ -157,6 +166,7 @@ class window.World
         @ships.push(
           new XWing(
             ship.name,
+            this,
             new THREE.Vector3(ship.pos.x,ship.pos.y,ship.pos.z),
             new THREE.Vector3(ship.rot.x,ship.rot.y,ship.rot.z)
           )
@@ -165,6 +175,7 @@ class window.World
         @ships.push(
           new TieIn(
             ship.name,
+            this,
             new THREE.Vector3(ship.pos.x,ship.pos.y,ship.pos.z),
             new THREE.Vector3(ship.rot.x,ship.rot.y,ship.rot.z)
           )
@@ -173,6 +184,7 @@ class window.World
         @ships.push(
           new Corvette(
             ship.name,
+            this,
             new THREE.Vector3(ship.pos.x,ship.pos.y,ship.pos.z),
             new THREE.Vector3(ship.rot.x,ship.rot.y,ship.rot.z)
           )
@@ -181,6 +193,7 @@ class window.World
         @ships.push(
           new SD(
             ship.name,
+            this,
             new THREE.Vector3(ship.pos.x,ship.pos.y,ship.pos.z),
             new THREE.Vector3(ship.rot.x,ship.rot.y,ship.rot.z)
           )

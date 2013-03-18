@@ -1,9 +1,8 @@
 class window.Corvette extends Ship
   cof: 0.0174532925
 
-  constructor: (name, initPos, initRot) ->
-    console.log("corvette const")
-    super(name, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
+  constructor: (name, world, initPos, initRot) ->
+    super(name, world, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
     @targetSprite = null
     @range = 10000
     @viewDist = 250

@@ -1,9 +1,8 @@
 class window.SD extends Ship
   cof: 0.0174532925
 
-  constructor: (name, initPos, initRot) ->
-    console.log("corvette const")
-    super(name, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
+  constructor: (name, world, initPos, initRot) ->
+    super(name, world, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
     @targetSprite = null
     @range = 10000
     @shieldTimeout = 2000

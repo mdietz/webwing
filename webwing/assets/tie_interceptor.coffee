@@ -1,9 +1,8 @@
 class window.TieIn extends Ship
   autoRand: Math.PI/4
 
-  constructor: (name, initPos, initRot) ->
-    console.log("tiein const")
-    super(name, initPos.clone(), initRot.clone(), "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
+  constructor: (name, world, initPos, initRot) ->
+    super(name, world, initPos.clone(), initRot.clone(), "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
     @nextLaser = 0
     @minDist = 400
     @maxDist = 2000
@@ -14,6 +13,7 @@ class window.TieIn extends Ship
     @range = 4000
     @targetSprite = null
     @shieldTimeout = 100
+    @autoPilotEnabled = false
 
   onHit: (faceIndex) =>
     @explode()
@@ -21,7 +21,6 @@ class window.TieIn extends Ship
   load: (onLoaded) =>
     super (ship) =>
       @model.useQuaternion = true
-      @boundingBox = Util.getCompoundBoundingBox(@model)
       @addTargetSprite()
       @createBoundingSphere(15, new THREE.Vector3(0, 0, 4), new THREE.Vector3(0.8, 0.5, 1.0))
       @resetPos()
@@ -29,28 +28,30 @@ class window.TieIn extends Ship
       onLoaded(ship)
 
   reset: () =>
-    @pathTween.stop()
+    if @autoPilotEnabled
+      @pathTween.stop()
     @resetPos()
     @resetRot()
-    @autoPilot()
+    if @autoPilotEnabled
+      @autoPilot()
     #@fireDouble()
 
   explode: () =>
-    scale = 1.0
+    scale = 0.1
     explosionTexture = THREE.ImageUtils.loadTexture( "static/img/Explosion.png" )
     explosionMaterial = new THREE.SpriteMaterial( {map: explosionTexture, useScreenCoordinates: false, transparent:true, opacity:0.9} )
     explosionSprite = new THREE.Sprite(explosionMaterial)
     explosionSprite.scale.set(scale, scale, scale)
-    explosionSprite.blending = THREE.AdditiveBlending
+    #explosionSprite.blending = THREE.AdditiveBlending
     @model.add(explosionSprite)
     tween = new TWEEN.Tween(explosionSprite.scale)
-    .to({x:100.0, y:100.0, z:100.0}, 1000)
-    .easing(TWEEN.Easing.Linear.None)
+    .to({x:100.0, y:100.0, z:100.0}, 500)
+    .easing(TWEEN.Easing.Linear.None) 
     .onComplete(() =>
       @model.remove(explosionSprite)
       @reset()
     )
-    window.Sound.playSound(window.Sound.explodeSound, 0.45)
+    @world.sound.playSound(@world.sound.explodeSound, 0.55)
     tween.start()
 
   addTargetSprite: () =>
@@ -70,6 +71,7 @@ class window.TieIn extends Ship
     tween.start()
 
   autoPilot: () =>
+    @autoPilotEnabled = true
     modelClone = @model.clone()
     dist = modelClone.position.distanceTo(@focus.model.position)
     if dist < @minDist and @dir == 1
@@ -125,7 +127,7 @@ class window.TieIn extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh)
     switch @nextLaser
@@ -171,7 +173,7 @@ class window.TieIn extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh1 = @laserGeom.clone()
     laserContainer.add(laserMesh1)
     laserMesh2 = @laserGeom.clone()
@@ -220,7 +222,7 @@ class window.TieIn extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
-    window.Sound.playSound(window.Sound.blasterSound, 0.03)
+    @world.sound.playSound(@world.sound.blasterSound, 0.03)
 
     setTimeout(() =>
       if @dir == 1
@@ -234,7 +236,7 @@ class window.TieIn extends Ship
     laserContainer.useQuaternion = true
     laserContainer.quaternion = @model.quaternion.clone()
     laserContainer.position = @model.position.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     laserMesh1 = new THREE.Mesh(@laserGeom, @laserMat)
     laserContainer.add(laserMesh1)
     laserMesh2 = new THREE.Mesh(@laserGeom, @laserMat)
@@ -285,9 +287,4 @@ class window.TieIn extends Ship
     , tweentime);
 
   laserCleanup: (container) =>
-    scene.remove(container)
-
-  laserCleanup: (container, mesh, light) =>
-    scene.remove(light)
-    scene.remove(mesh)
-    scene.remove(container)
+    @world.scene.remove(container)

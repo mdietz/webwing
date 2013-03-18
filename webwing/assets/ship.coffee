@@ -1,6 +1,6 @@
 class window.Ship
 
-  constructor: (@name, @initPos, @initRot, @objLoc, @mtlLoc, @laserColor) ->
+  constructor: (@name, @world, @initPos, @initRot, @objLoc, @mtlLoc, @laserColor) ->
     #@laserMat = new THREE.MeshBasicMaterial( { color: @laserColor, opacity: 0.5 } )
     @laserMat = new THREE.LineBasicMaterial( { color: @laserColor, opacity: 0.7, fog:false, linewidth: 3} )
     @rayMat = new THREE.MeshBasicMaterial( { color: @laserColor, linewidth: 0.1} )
@@ -70,7 +70,7 @@ class window.Ship
     boundingBoxes = []
 
     # TODO: Optimize this
-    for ship in window.ships
+    for ship in @world.ships
       if ship != this
         worldSphere = ship.boundingSphere.clone()
         worldSphere.useQuaternion = true
