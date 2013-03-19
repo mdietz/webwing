@@ -32,6 +32,62 @@ class window.World
                           y: Math.PI,
                           z: 0
                         }
+                      },
+                      {
+                        type: 'tie-in',
+                        name: 'Wrath Two',
+                        pos: {
+                          x: 40,
+                          y: 0,
+                          z: 1040
+                        },
+                        rot: {
+                          x: 0,
+                          y: Math.PI,
+                          z: 0
+                        }
+                      },
+                      {
+                        type: 'tie-in',
+                        name: 'Wrath Three',
+                        pos: {
+                          x: -40,
+                          y: 0,
+                          z: 1040
+                        },
+                        rot: {
+                          x: 0,
+                          y: Math.PI,
+                          z: 0
+                        }
+                      }
+                      {
+                        type: 'tie-in',
+                        name: 'Wrath Four',
+                        pos: {
+                          x: -80,
+                          y: 0,
+                          z: 1080
+                        },
+                        rot: {
+                          x: 0,
+                          y: Math.PI,
+                          z: 0
+                        }
+                      },
+                      {
+                        type: 'stardestroyer',
+                        name: 'Implacable',
+                        pos: {
+                          x: 0,
+                          y: 0,
+                          z: 6000
+                        },
+                        rot: {
+                          x: 0,
+                          y: Math.PI/2,
+                          z: -Math.PI/8
+                        }
                       }
                     ],
                     views: [
@@ -44,7 +100,7 @@ class window.World
                         eye: [ 0, 5, -40 ],
                         up: [ 0, 1, 0 ],
                         rot: [ 0, Math.PI, 0 ],
-                        depth: 200000,
+                        depth: 2000000,
                         fov: 60,
                         background: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
                         updateCamera: ( camera, scene ) =>
@@ -56,7 +112,7 @@ class window.World
   constructor: (@name) ->
     console.log(@defaultWorld)
     @flightControls = null
-    @animationToggle = false
+    @animationToggle = true
     @windowWidth = window.innerWidth
     @windowHeight = window.innerHeight
     @initShips = @defaultWorld.ships
@@ -73,6 +129,8 @@ class window.World
     @initStats()
     @initCameras()
     @initLights()
+    @hyperspace = new Hyperspace(this, @views[0].camera, @scene, @renderer)
+    @hyperspace.start()
     @initSkybox()
     @initOptions()
     @loadShips()
@@ -125,7 +183,7 @@ class window.World
         side: THREE.BackSide
     })
 
-    @skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000, 1, 1, 1), cubeMaterial )
+    @skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 1000000, 1000000, 1000000, 1, 1, 1), cubeMaterial )
     @scene.add( @skyboxMesh )
 
   initOptions: () =>
@@ -203,16 +261,31 @@ class window.World
 
   shipLoaded: (ship) =>
     console.log(ship)
-    @scene.add(ship.model)
+    #@scene.add(ship.model)
     @loadedShips += 1
     console.log(@loadedShips)
     if ship.name == "Rogue Leader"
       #ship.model.add(@views[0].camera)
       #@views[0].camera.lookAt(ship.model)
+      @scene.add(ship.model)
       @flightControls = new FlightControls(ship)
     if @loadedShips >= @initShips.length
       @allLoaded = true
-      @animate()
+      console.log("All loaded")
+      models = []
+      for ship in @ships
+        if ship.name != "Rogue Leader"
+          models.push(ship.model)
+      setTimeout(() =>
+        #@skyboxMesh.visible = true
+        @hyperspace.stop(models, () =>
+          @finishHyperspace
+        )
+      , 5000)
+
+  finishHyperspace: () =>
+    console.log("STOP HYPERSPACE I WANT TO GET OFF")
+    @animate()
 
   updateSize: () =>
     if @windowWidth != window.innerWidth || @windowHeight != window.innerHeight
