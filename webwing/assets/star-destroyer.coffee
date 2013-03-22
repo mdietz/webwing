@@ -3,6 +3,7 @@ class window.SD extends Ship
 
   constructor: (name, world, initPos, initRot) ->
     super(name, world, initPos, initRot, "static/res/star-destroyer.dae", "", 0x00ff00)
+    @type = "stardestroyer"
     @targetSprite = null
     @range = 10000
     @shieldTimeout = 2000
@@ -30,9 +31,6 @@ class window.SD extends Ship
     @targetSprite.blending = THREE.AdditiveBlending
     @model.add(@targetSprite)
 
-  addTarget: (ship) =>
-    @targets.push(ship)
-
   fireSingle: () =>
     distance = 10000
     tweentime = 5000
@@ -40,7 +38,7 @@ class window.SD extends Ship
     laserContainer.useQuaternion = true
     laserContainer.position = @model.position.clone()
     laserContainer.quaternion = @model.quaternion.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     if @targets.length == 0
       Util.rotObj(laserContainer, Util.xAxis, Math.random()*2*Math.PI)
       Util.rotObj(laserContainer, Util.yAxis, Math.random()*2*Math.PI)
@@ -77,10 +75,11 @@ class window.SD extends Ship
         @laserCleanup(laserContainer)
       , tweentime)
 
-    window.Sound.playSound(window.Sound.blasterSound, 0.03)
+    @world.sound.playSound(@world.sound.blasterSound, 0.03)
 
     setTimeout(() =>
-      @fireSingle()
+      if @firing
+        @fireSingle()
     , tweentime/16);
 
   fireDouble: () =>
@@ -90,7 +89,7 @@ class window.SD extends Ship
     laserContainer.useQuaternion = true
     laserContainer.position = @model.position.clone()
     laserContainer.quaternion = @model.quaternion.clone()
-    window.scene.add(laserContainer)
+    @world.scene.add(laserContainer)
     if @targets.length == 0
       Util.rotObj(laserContainer, Util.xAxis, Math.random()*2*Math.PI)
       Util.rotObj(laserContainer, Util.yAxis, Math.random()*2*Math.PI)
@@ -125,4 +124,4 @@ class window.SD extends Ship
     , tweentime);
 
   laserCleanup: (container) =>
-    window.scene.remove(container)
+    @world.scene.remove(container)

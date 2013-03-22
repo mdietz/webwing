@@ -1,9 +1,20 @@
 class window.Ship
+  autoRand: Math.PI/4
 
   constructor: (@name, @world, @initPos, @initRot, @objLoc, @mtlLoc, @laserColor) ->
     #@laserMat = new THREE.MeshBasicMaterial( { color: @laserColor, opacity: 0.5 } )
-    @laserMat = new THREE.LineBasicMaterial( { color: @laserColor, opacity: 0.7, fog:false, linewidth: 3} )
+    @laserMat = new THREE.LineBasicMaterial( { color: @laserColor, opacity: 0.7, fog:false, linewidth: 2} )
     @rayMat = new THREE.MeshBasicMaterial( { color: @laserColor, linewidth: 0.1} )
+    @explosionMaterial = new THREE.ShaderMaterial( {
+      uniforms: {
+        tExplosion: { type: "t", value: THREE.ImageUtils.loadTexture( 'static/img/explosion.png' ) },
+        time: { type: "f", value: Math.random() },
+        weight: { type: "f", value: 10.0 }
+      },
+      vertexShader: document.getElementById( 'perlin_vertex_shader' ).textContent,
+      fragmentShader: document.getElementById( 'perlin_fragment_shader' ).textContent
+
+    } )
     geometry = new THREE.Geometry();
     geometry.vertices.push( new THREE.Vector3(0,0,-20) )
     geometry.vertices.push( new THREE.Vector3(0,0,20) )
@@ -19,7 +30,10 @@ class window.Ship
     @shieldTimeout = 100
     @viewDist = 50
     @shieldOn = [false, false, false, false, false, false, false, false]
-    @simpleShields = true
+    @simpleShields = false
+    @autoPilotEnabled = false
+    @maxSpeed = 200
+    @firing = false
 
   load: (onLoaded) =>
     if /.obj$/.test(@objLoc)
@@ -47,6 +61,12 @@ class window.Ship
         onLoaded(this)
       )
 
+  getUpdatedModel: (quat) =>
+    newShip = @model.clone()
+    newShip.quaternion = quat
+    newShip.translateZ(@speed/10)
+    newShip.position.clone()
+
   addTarget: (ship) =>
     @targets.push(ship)
     if @focus == null
@@ -60,6 +80,16 @@ class window.Ship
     Util.rotObj(@model, Util.xAxis, @initRot.x)
     Util.rotObj(@model, Util.yAxis, @initRot.y)
     Util.rotObj(@model, Util.zAxis, @initRot.z)
+
+  reset: () =>
+    if @autoPilotEnabled
+      @pathTween.stop()
+    @resetPos()
+    @resetRot()
+    @firing = false
+    if @autoPilotEnabled
+      @autoPilot()
+    #@fireDouble()
 
   computeHit: (laserContainer) =>
     clonedLaser = laserContainer.clone()
@@ -93,11 +123,11 @@ class window.Ship
     @boundingSphere = new THREE.Object3D()
     sphere = new THREE.SphereGeometry( radius, 8, 8 )
     perlinTex = THREE.ImageUtils.loadTexture("static/img/simplex_noise.png")
-    #simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
-    #simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
+    simplex_vertex = document.getElementById( 'simplex_vertex_shader' ).textContent
+    simplex_fragment = document.getElementById( 'simplex_fragment_shader' ).textContent
     shieldUniforms = {
-      time: window.time,
-      scale:  { type: "f", value: 1.0/radius }
+      time: @world.simplexTime,
+      scale:  { type: "f", value: 10.0/radius }
     }
     materials = []
     for face, i in sphere.faces
@@ -171,6 +201,9 @@ class window.Ship
     @boundingSphere.children[1].geometry.materials[i].visible = false
     @shieldOn[index] = false
 
+  showLaserHitParticles: (faceIndex, hittingShip) =>
+    return
+
   addLaserRay: (startPos, orientationVector) =>
     _startPos = startPos.clone()
     endPos = _startPos.add(orientationVector.multiplyScalar(2000))
@@ -190,4 +223,51 @@ class window.Ship
   setSpeed: (newSpeed) =>
     @speed = newSpeed
 
-
+  autoPilot: () =>
+    @autoPilotEnabled = true
+    modelClone = @model.clone()
+    dist = modelClone.position.distanceTo(@focus.model.position)
+    if dist < @minDist and @dir == 1
+      @switch_near = true
+    if dist > @minDist and @switch_near
+      @dir = -1
+      @firing = false
+      @targetRot = null
+      @switch_near = false
+    if dist > @maxDist and @dir == -1
+      @switch_far = true
+    if dist < @maxDist and @switch_far
+      @dir = 1
+      @firing = true
+      @fireDouble()
+      @targetRot = null
+      @switch_far = false
+    else if dist < @maxDist and !@firing and @dir == 1
+      @firing = true
+      @fireDouble()
+    @speed = Math.min(@maxSpeed, @focus.speed)
+    if (dir == 1 and !@switch_near) or (dir == -1 and @switch_far)
+      modelClone.lookAt(@focus.model.position)
+    if @targetRot != null
+      if @switch_near
+        modelClone.lookAt(@focus.model.position)
+        Util.rotObj(modelClone, Util.xAxis, Math.PI + (@autoRand - Math.random()*@autoRand*2))
+        Util.rotObj(modelClone, Util.yAxis, (@autoRand - Math.random()*@autoRand*2))
+        Util.rotObj(modelClone, Util.zAxis, (@autoRand - Math.random()*@autoRand*2))
+        @targetRot = modelClone.quaternion.clone()
+      if @switch_far
+        modelClone.lookAt(@focus.model.position)
+        @targetRot = modelClone.quaternion.clone()
+    if @switch_near or @switch_far
+      newRot = @targetRot
+    else
+      newRot = modelClone.quaternion.clone()
+    newPos = @getUpdatedModel(newRot)
+    toVals = {position:{x:newPos.x, y:newPos.y, z:newPos.z}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
+    @pathTween = new TWEEN.Tween(@model)
+    .to(toVals, 100)
+    .easing(TWEEN.Easing.Linear.None)
+    .onComplete(() =>
+      @autoPilot()
+    )
+    @pathTween.start()

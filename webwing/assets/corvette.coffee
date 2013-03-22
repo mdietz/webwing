@@ -3,6 +3,7 @@ class window.Corvette extends Ship
 
   constructor: (name, world, initPos, initRot) ->
     super(name, world, initPos, initRot, "static/res/CORVETTA.dae", "", 0xff0000)
+    @type = "corvette"
     @targetSprite = null
     @range = 10000
     @viewDist = 250

@@ -2,11 +2,20 @@ class window.XWing extends Ship
 
   constructor: (name, world, initPos, initRot) ->
     super(name, world, initPos.clone(), initRot.clone(), "static/res/XWing-low.obj", "static/res/XWing-low.mtl", 0xff0000)
+    @type = "xwing"
     @crosshair = null
     @nextLaser = 0
     @range = 10000
+    @minDist = 200
+    @maxDist = 2000
+    @dir = 1
+    @targetRot = null
+    @switch_near = false
+    @switch_far = false
     @shieldTimeout = 100
-    console.log(@world)
+    @speed = 200
+    @maxSpeed = 200
+    @hitCount = 0
 
   load: (onLoaded) =>
     super (ship) =>
@@ -19,7 +28,39 @@ class window.XWing extends Ship
       onLoaded(ship)
 
   onHit: (faceIndex) =>
-    @showShield(faceIndex)
+    @hitCount += 1
+    if @hitCount%50 != 0
+      @showShield(faceIndex)
+    else
+      @explode2()
+
+  explode2: () =>
+    mesh = new THREE.Mesh( new THREE.IcosahedronGeometry( 20, 3 ), @explosionMaterial );
+    mesh.scale.set(0.1, 0.1, 0.1)
+    @model.add(mesh)
+    explodeOut = new TWEEN.Tween(mesh.scale)
+    .to({x: 0.1, y: 0.1, z:0.1}, 250)
+    .easing(TWEEN.Easing.Exponential.In)
+    .onComplete(() =>
+      @model.remove(mesh)
+      @reset()
+    )
+
+    explodeIn = new TWEEN.Tween(mesh.scale)
+    .to({x: 3, y: 3, z:3}, 750)
+    .easing(TWEEN.Easing.Back.Out)
+    .onComplete(() =>
+      @model.visible = false
+      mesh.visible = true
+    ).chain(explodeOut)
+    .start()
+
+    new TWEEN.Tween(@explosionMaterial.uniforms[ 'time' ])
+    .to({value: @explosionMaterial.uniforms[ 'time' ].value + 1.0}, 1000)
+    .easing(TWEEN.Easing.Linear.None)
+    .start()
+
+    @world.sound.playSound(@world.sound.explodeSound, 0.55)
 
   addCrosshair: () =>
     scale = 4.0
@@ -156,7 +197,7 @@ class window.XWing extends Ship
     @world.sound.playSound(@world.sound.blasterSound, 0.2)
 
     setTimeout(() =>
-      if @world.flightControls.spaceIsDown
+      if @firing
         @fireDouble()
     , tweentime/4)
 

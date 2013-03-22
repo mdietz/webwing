@@ -36,7 +36,7 @@ def index():
     mustache_templates.append((template_id, template_content))
 
   shaders = []
-  for shader in ["perlin_noise"]: #, "simplex_noise"]:
+  for shader in ["perlin_noise", "simplex_noise"]:
     shader_content = read_shader(shader + ".shader")
     shaders.append((shader, shader_content))
 

@@ -1,10 +1,10 @@
 class window.TieIn extends Ship
-  autoRand: Math.PI/4
 
   constructor: (name, world, initPos, initRot) ->
     super(name, world, initPos.clone(), initRot.clone(), "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
+    @type = "tie-in"
     @nextLaser = 0
-    @minDist = 400
+    @minDist = 200
     @maxDist = 2000
     @dir = 1
     @targetRot = null
@@ -13,10 +13,14 @@ class window.TieIn extends Ship
     @range = 4000
     @targetSprite = null
     @shieldTimeout = 100
-    @autoPilotEnabled = false
+    @speed = 250
+    @maxSpeed = 250
+    @hitCount = 0
 
   onHit: (faceIndex) =>
-    @explode()
+    @hitCount += 1
+    if @hitCount%25 == 0
+      @explode2()
 
   load: (onLoaded) =>
     super (ship) =>
@@ -27,14 +31,33 @@ class window.TieIn extends Ship
       @resetRot()
       onLoaded(ship)
 
-  reset: () =>
-    if @autoPilotEnabled
-      @pathTween.stop()
-    @resetPos()
-    @resetRot()
-    if @autoPilotEnabled
-      @autoPilot()
-    #@fireDouble()
+  explode2: () =>
+    mesh = new THREE.Mesh( new THREE.IcosahedronGeometry( 20, 3 ), @explosionMaterial );
+    mesh.scale.set(0.1, 0.1, 0.1)
+    @model.add(mesh)
+    explodeOut = new TWEEN.Tween(mesh.scale)
+    .to({x: 0.1, y: 0.1, z:0.1}, 250)
+    .easing(TWEEN.Easing.Exponential.In)
+    .onComplete(() =>
+      @model.remove(mesh)
+      @reset()
+    )
+
+    explodeIn = new TWEEN.Tween(mesh.scale)
+    .to({x: 3, y: 3, z:3}, 750)
+    .easing(TWEEN.Easing.Back.Out)
+    .onComplete(() =>
+      @model.visible = false
+      mesh.visible = true
+    ).chain(explodeOut)
+    .start()
+
+    new TWEEN.Tween(@explosionMaterial.uniforms[ 'time' ])
+    .to({value: @explosionMaterial.uniforms[ 'time' ].value + 1.0}, 1000)
+    .easing(TWEEN.Easing.Linear.None)
+    .start()
+
+    @world.sound.playSound(@world.sound.explodeSound, 0.55)
 
   explode: () =>
     scale = 0.1
@@ -55,13 +78,60 @@ class window.TieIn extends Ship
     tween.start()
 
   addTargetSprite: () =>
-    scale = 35.0
+    @targetMat = new THREE.LineBasicMaterial( { color: 0xff0000, opacity: 0.7, fog:false, linewidth: 1} )
+
+    @targetContainer = new THREE.Object3D()
+
+    # Upper Left
+    geometry1 = new THREE.Geometry();
+    geometry1.vertices.push( new THREE.Vector3(-1,1,0) )
+    geometry1.vertices.push( new THREE.Vector3(-.5,1,0) )
+    @targetContainer.add(new THREE.Line(geometry1, @targetMat))
+    geometry2 = new THREE.Geometry();
+    geometry2.vertices.push( new THREE.Vector3(-1,1,0) )
+    geometry2.vertices.push( new THREE.Vector3(-1,.5,0) )
+    @targetContainer.add(new THREE.Line(geometry2, @targetMat))
+
+    # Upper Right
+    geometry3 = new THREE.Geometry();
+    geometry3.vertices.push( new THREE.Vector3(1,1,0) )
+    geometry3.vertices.push( new THREE.Vector3(.5,1,0) )
+    @targetContainer.add(new THREE.Line(geometry3, @targetMat))
+    geometry4 = new THREE.Geometry();
+    geometry4.vertices.push( new THREE.Vector3(1,1,0) )
+    geometry4.vertices.push( new THREE.Vector3(1,.5,0) )
+    @targetContainer.add(new THREE.Line(geometry4, @targetMat))
+
+    # Lower Right
+    geometry5 = new THREE.Geometry();
+    geometry5.vertices.push( new THREE.Vector3(1,-1,0) )
+    geometry5.vertices.push( new THREE.Vector3(.5,-1,0) )
+    @targetContainer.add(new THREE.Line(geometry5, @targetMat))
+    geometry6 = new THREE.Geometry();
+    geometry6.vertices.push( new THREE.Vector3(1,-1,0) )
+    geometry6.vertices.push( new THREE.Vector3(1,-.5,0) )
+    @targetContainer.add(new THREE.Line(geometry6, @targetMat))
+
+    # Lower Left
+    geometry7 = new THREE.Geometry();
+    geometry7.vertices.push( new THREE.Vector3(-1,-1,0) )
+    geometry7.vertices.push( new THREE.Vector3(-.5,-1,0) )
+    @targetContainer.add(new THREE.Line(geometry7, @targetMat))
+    geometry8 = new THREE.Geometry();
+    geometry8.vertices.push( new THREE.Vector3(-1,-1,0) )
+    geometry8.vertices.push( new THREE.Vector3(-1,-.5,0) )
+    @targetContainer.add(new THREE.Line(geometry8, @targetMat))
+
+    @targetContainer.scale.set(15, 15, 15)
+    @model.add(@targetContainer)
+
+    ###scale = 35.0
     targetTexture = THREE.ImageUtils.loadTexture( "static/img/enemy_target.png" )
     targetMaterial = new THREE.SpriteMaterial( {map: targetTexture, useScreenCoordinates: false, transparent:true, opacity:0.7} )
     @targetSprite = new THREE.Sprite(targetMaterial)
     @targetSprite.scale.set(scale, scale, scale)
     @targetSprite.blending = THREE.AdditiveBlending
-    @model.add(@targetSprite)
+    @model.add(@targetSprite)###
 
   setAsPlayerTarget: () =>
     tween = new TWEEN.Tween(@targetSprite)
@@ -69,56 +139,6 @@ class window.TieIn extends Ship
     .easing(TWEEN.Easing.Linear.None)
     .repeat(Infinity)
     tween.start()
-
-  autoPilot: () =>
-    @autoPilotEnabled = true
-    modelClone = @model.clone()
-    dist = modelClone.position.distanceTo(@focus.model.position)
-    if dist < @minDist and @dir == 1
-      @switch_near = true
-    if dist > @minDist and @switch_near
-      @dir = -1
-      @targetRot = null
-      @switch_near = false
-    if dist > @maxDist and @dir == -1
-      @switch_far = true
-    if dist < @maxDist and @switch_far
-      @dir = 1
-      @fireDouble()
-      @targetRot = null
-      @switch_far = false
-    @speed = Math.max(220, @focus.speed-10)
-    if @dir == 1 and !@switch_near
-      modelClone.lookAt(@focus.model.position)
-    if @targetRot == null
-      if @switch_near
-        modelClone.lookAt(@focus.model.position)
-        Util.rotObj(modelClone, Util.xAxis, Math.PI + (@autoRand - Math.random()*@autoRand*2))
-        Util.rotObj(modelClone, Util.yAxis, (@autoRand - Math.random()*@autoRand*2))
-        Util.rotObj(modelClone, Util.zAxis, (@autoRand - Math.random()*@autoRand*2))
-        @targetRot = modelClone.quaternion.clone()
-      if @switch_far
-        modelClone.lookAt(@focus.model.position)
-        @targetRot = modelClone.quaternion.clone()
-    if @switch_near or @switch_far
-      newRot = @targetRot
-    else
-      newRot = modelClone.quaternion.clone()
-    newPos = @getUpdatedModel(newRot)
-    toVals = {position:{x:newPos.x, y:newPos.y, z:newPos.z}, quaternion:{x:newRot.x, y:newRot.y, z:newRot.z, w:newRot.w}}
-    @pathTween = new TWEEN.Tween(@model)
-    .to(toVals, 100)
-    .easing(TWEEN.Easing.Linear.None)
-    .onComplete(() =>
-      @autoPilot()
-    )
-    @pathTween.start()
-
-  getUpdatedModel: (quat) =>
-    newShip = @model.clone()
-    newShip.quaternion = quat
-    newShip.translateZ(@speed/10)
-    newShip.position.clone()
 
   fireSingle: () =>
     distance = 4000
@@ -225,7 +245,7 @@ class window.TieIn extends Ship
     @world.sound.playSound(@world.sound.blasterSound, 0.03)
 
     setTimeout(() =>
-      if @dir == 1
+      if @firing
         @fireDouble()
     , tweentime/4);
 

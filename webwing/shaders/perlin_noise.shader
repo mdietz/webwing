@@ -226,7 +226,7 @@ void main() {
 
 </script>
 
-<script type="x-shader/x-vertex" id="perlin_fragment_sshader">
+<script type="x-shader/x-vertex" id="perlin_fragment_shader">
 
 varying vec2 vUv;
 uniform sampler2D tExplosion;
@@ -247,7 +247,7 @@ void main() {
 
 </script>
 
-<script type="x-shader/x-vertex" id="perlin_vertex_shader">
+<script type="x-shader/x-vertex" id="gradient_vertex_shader">
 
 varying vec2 vUv;
 
@@ -260,7 +260,7 @@ void main() {
 
 </script>
 
-<script type="x-shader/x-vertex" id="fs_Gradient">
+<script type="x-shader/x-vertex" id="gradient_fragment_shader">
 
 uniform sampler2D tDiffuse;
 uniform vec2 resolution;

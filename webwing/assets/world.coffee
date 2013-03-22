@@ -17,35 +17,83 @@ class window.World
                           x: 0,
                           y: 0,
                           z: 0
-                        }
+                        },
+                        targets: ["Wrath Leader"]
+                      },
+                      {
+                        type: 'xwing',
+                        name: 'Rogue Two',
+                        pos: {
+                          x: 40,
+                          y: 0,
+                          z: -40
+                        },
+                        rot: {
+                          x: 0,
+                          y: 0,
+                          z: 0
+                        },
+                        targets: ["Wrath Two"]
+                      },
+                      {
+                        type: 'xwing',
+                        name: 'Rogue Three',
+                        pos: {
+                          x: -40,
+                          y: 0,
+                          z: -40
+                        },
+                        rot: {
+                          x: 0,
+                          y: 0,
+                          z: 0
+                        },
+                        targets: ["Wrath Three"]
+                      },
+                      {
+                        type: 'xwing',
+                        name: 'Rogue Four',
+                        pos: {
+                          x: -80,
+                          y: 0,
+                          z: -80
+                        },
+                        rot: {
+                          x: 0,
+                          y: 0,
+                          z: 0
+                        },
+                        targets: ["Wrath Four"]
                       },
                       {
                         type: 'tie-in',
                         name: 'Wrath Leader',
                         pos: {
                           x: 0,
-                          y: 0,
-                          z: 1000
+                          y: 40,
+                          z: 6000
                         },
                         rot: {
                           x: 0,
                           y: Math.PI,
                           z: 0
-                        }
+                        },
+                        targets: ["Rogue Two"]
                       },
                       {
                         type: 'tie-in',
                         name: 'Wrath Two',
                         pos: {
-                          x: 40,
-                          y: 0,
-                          z: 1040
+                          x: 0,
+                          y: -40,
+                          z: 6000
                         },
                         rot: {
                           x: 0,
                           y: Math.PI,
                           z: 0
-                        }
+                        },
+                        targets: ["Rogue Three"]
                       },
                       {
                         type: 'tie-in',
@@ -53,27 +101,29 @@ class window.World
                         pos: {
                           x: -40,
                           y: 0,
-                          z: 1040
+                          z: 6000
                         },
                         rot: {
                           x: 0,
                           y: Math.PI,
                           z: 0
-                        }
+                        },
+                        targets: ["Rogue Four"]
                       }
                       {
                         type: 'tie-in',
                         name: 'Wrath Four',
                         pos: {
-                          x: -80,
+                          x: 40,
                           y: 0,
-                          z: 1080
+                          z: 6000
                         },
                         rot: {
                           x: 0,
                           y: Math.PI,
                           z: 0
-                        }
+                        },
+                        targets: ["Rogue Leader"]
                       },
                       {
                         type: 'stardestroyer',
@@ -81,13 +131,14 @@ class window.World
                         pos: {
                           x: 0,
                           y: 0,
-                          z: 6000
+                          z: 8000
                         },
                         rot: {
                           x: 0,
                           y: Math.PI/2,
                           z: -Math.PI/8
-                        }
+                        },
+                        targets: ["Rogue Leader", "Rogue Two", "Rogue Three", "Rogue Four"]
                       }
                     ],
                     views: [
@@ -124,6 +175,9 @@ class window.World
     @renderer.setSize( @windowWidth, @windowHeight );
     @sound = new window.Sound()
     @loadedShips = 0
+    @startTime = new Date().getTime()
+    @time = @startTime
+    @simplexTime = { type: "f", value: 1.0 }
     @wireframe = false
     @stats = new Stats()
     @initStats()
@@ -161,7 +215,11 @@ class window.World
     @scene.add( @ambient )
 
     @directionalLight = new THREE.DirectionalLight( 0xaaaaaa )
-    @directionalLight.position.set( 0, 1, -1 )
+    @directionalLight.position.set( 1, 1, -1 )
+    @scene.add( @directionalLight )
+
+    @directionalLight = new THREE.DirectionalLight( 0xaaaaaa )
+    @directionalLight.position.set( -1, -1, 1 )
     @scene.add( @directionalLight )
 
     ###@pointLight = new THREE.PointLight( 0xaaaaaa )
@@ -265,13 +323,20 @@ class window.World
     @loadedShips += 1
     console.log(@loadedShips)
     if ship.name == "Rogue Leader"
-      #ship.model.add(@views[0].camera)
+      ship.model.add(@views[0].camera)
       #@views[0].camera.lookAt(ship.model)
       @scene.add(ship.model)
-      @flightControls = new FlightControls(ship)
+      #@flightControls = new FlightControls(ship)
     if @loadedShips >= @initShips.length
       @allLoaded = true
       console.log("All loaded")
+      for ship in @initShips
+        for target in ship.targets
+          for ship1 in @ships
+            if ship1.name == ship.name
+              for ship2 in @ships
+                if ship2.name == target
+                  ship1.addTarget(ship2)
       models = []
       for ship in @ships
         if ship.name != "Rogue Leader"
@@ -285,6 +350,12 @@ class window.World
 
   finishHyperspace: () =>
     console.log("STOP HYPERSPACE I WANT TO GET OFF")
+    for ship in @ships
+      if ship.type == "xwing" or ship.type == "tie-in"
+        ship.autoPilot()
+      else if ship.type == "stardestroyer"
+        ship.firing = true
+        ship.fireSingle()
     @animate()
 
   updateSize: () =>
@@ -296,6 +367,12 @@ class window.World
 
   animate: () =>
     @updateSize()
+
+    newTime = new Date().getTime()
+    delta = ( newTime - @time )
+    @time = newTime
+
+    @simplexTime.value += 0.275 * delta
 
     if(@animationToggle)
       requestAnimationFrame( @animate )
