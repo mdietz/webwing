@@ -246,9 +246,9 @@ class window.Ship
       @firing = true
       @fireDouble()
     @speed = Math.min(@maxSpeed, @focus.speed)
-    if (dir == 1 and !@switch_near) or (dir == -1 and @switch_far)
+    if (@dir == 1 and !@switch_near) or (@dir == -1 and @switch_far)
       modelClone.lookAt(@focus.model.position)
-    if @targetRot != null
+    if @targetRot == null
       if @switch_near
         modelClone.lookAt(@focus.model.position)
         Util.rotObj(modelClone, Util.xAxis, Math.PI + (@autoRand - Math.random()*@autoRand*2))

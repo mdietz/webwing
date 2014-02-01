@@ -6,7 +6,7 @@ class window.XWing extends Ship
     @crosshair = null
     @nextLaser = 0
     @range = 10000
-    @minDist = 200
+    @minDist = 100
     @maxDist = 2000
     @dir = 1
     @targetRot = null

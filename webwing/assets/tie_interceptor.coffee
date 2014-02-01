@@ -4,7 +4,7 @@ class window.TieIn extends Ship
     super(name, world, initPos.clone(), initRot.clone(), "static/res/Tie-In-low.obj", "static/res/Tie-In-low.mtl", 0x00ff00)
     @type = "tie-in"
     @nextLaser = 0
-    @minDist = 200
+    @minDist = 100
     @maxDist = 2000
     @dir = 1
     @targetRot = null
