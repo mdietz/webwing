@@ -1,0 +1,138 @@
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
+
+
++==============================================================================+
+
+                                   /$$$$$$            /$$
+                                  /$$__  $$          | $$
+               /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
+              /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
+             |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
+              \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
+              /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
+             |_______/  \_______/|__/     \_______/   \___/   \____  $$
+                                                              /$$  | $$
+                                                             |  $$$$$$/
+      by safetycli.com                                        \______/
+
++==============================================================================+
+
+ REPORT
+
+  Safety v3.5.2 is scanning for Vulnerabilities...
+  Scanning dependencies in your environment:
+
+  -> /home/swebot/.local/lib/python3.10/site-packages
+  -> /usr/lib/python3.10/lib-dynload
+  -> /home/jules/.local/lib/python3.10/site-packages
+  -> /home/jules/.local/bin
+  -> /usr/local/lib/python3.10/dist-packages
+  -> /usr/local/lib/python3.10/dist-packages/setuptools/_vendor
+  -> /usr/lib/python3/dist-packages
+  -> /usr/lib/python310.zip
+  -> /usr/lib/python3.10
+
+  Using open-source vulnerability database
+  Found and scanned 116 packages
+  Timestamp 2025-06-16 23:53:32
+  5 vulnerabilities reported
+  0 vulnerabilities ignored
+
++==============================================================================+
+ VULNERABILITIES FOUND
++==============================================================================+
+
+-> Vulnerability found in cryptography version 41.0.7
+   Vulnerability ID: 65278
+   Affected spec: <42.0.0
+   ADVISORY: Affected versions of Cryptography may allow a remote
+   attacker to decrypt captured messages in TLS servers that use RSA key...
+   CVE-2023-50782
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/65278/97c
+   To ignore this vulnerability, use PyUp vulnerability id 65278 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in cryptography version 41.0.7
+   Vulnerability ID: 65212
+   Affected spec: >=35.0.0,<42.0.2
+   ADVISORY: Versions of Cryptograph starting from 35.0.0 are
+   susceptible to a security flaw in the POLY1305 MAC algorithm on PowerPC...
+   CVE-2023-6129
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/65212/97c
+   To ignore this vulnerability, use PyUp vulnerability id 65212 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in cryptography version 41.0.7
+   Vulnerability ID: 65647
+   Affected spec: <42.0.5
+   ADVISORY: Cryptography version 42.0.5 introduces a limit on the
+   number of name constraint checks during X.509 path validation to...
+   PVE-2024-65647
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/65647/97c
+   To ignore this vulnerability, use PyUp vulnerability id 65647 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in cryptography version 41.0.7
+   Vulnerability ID: 66704
+   Affected spec: >=38.0.0,<42.0.4
+   ADVISORY: cryptography is a package designed to expose
+   cryptographic primitives and recipes to Python developers. Starting in...
+   CVE-2024-26130
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/66704/97c
+   To ignore this vulnerability, use PyUp vulnerability id 66704 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in pyjwt version 2.7.0
+   Vulnerability ID: 74429
+   Affected spec: <2.10.1
+   ADVISORY: Affected versions of pyjwt are vulnerable to Partial
+   Comparison (CWE-187). This flaw allows attackers to bypass issuer (iss)...
+   CVE-2024-53861
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/74429/97c
+   To ignore this vulnerability, use PyUp vulnerability id 74429 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
++==============================================================================+
+   REMEDIATIONS
+
+  5 vulnerabilities were reported in 2 packages. For detailed remediation &
+  fix recommendations, upgrade to a commercial license.
+
++==============================================================================+
+
+ Scan was completed. 5 vulnerabilities were reported.
+
++==============================================================================+
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
