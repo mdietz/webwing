@@ -1,0 +1,68 @@
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
+
+
++==============================================================================+
+
+                                   /$$$$$$            /$$
+                                  /$$__  $$          | $$
+               /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
+              /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
+             |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
+              \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
+              /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
+             |_______/  \_______/|__/     \_______/   \___/   \____  $$
+                                                              /$$  | $$
+                                                             |  $$$$$$/
+      by safetycli.com                                        \______/
+
++==============================================================================+
+
+ REPORT
+
+  Safety v3.5.2 is scanning for Vulnerabilities...
+  Scanning dependencies in your environment:
+
+  -> /usr/local/lib/python3.10/dist-packages/setuptools/_vendor
+  -> /home/jules/.local/bin
+  -> /usr/lib/python3.10
+  -> /home/jules/.local/lib/python3.10/site-packages
+  -> /usr/local/lib/python3.10/dist-packages
+  -> /usr/lib/python3/dist-packages
+  -> /usr/lib/python3.10/lib-dynload
+  -> /usr/lib/python310.zip
+  -> /home/swebot/.local/lib/python3.10/site-packages
+
+  Using open-source vulnerability database
+  Found and scanned 124 packages
+  Timestamp 2025-06-17 00:01:52
+  0 vulnerabilities reported
+  0 vulnerabilities ignored
+
++==============================================================================+
+
+ No known security vulnerabilities found.
+
++==============================================================================+
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+

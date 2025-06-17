@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, current_app, make_response, _app_ctx_stack, url_for
+from flask import Blueprint, abort, current_app, make_response, url_for
 from werkzeug.local import LocalProxy
 from stylus import Stylus
 import coffeescript
@@ -20,7 +20,7 @@ assets_cache = LocalProxy(get_assets_cache)
 CompiledAsset = namedtuple("CompiledAsset", "content fingerprint last_modified content_type")
 
 def get_stylus_compiler():
-  context = _app_ctx_stack.top
+  context = current_app
   compiler = getattr(context, "webwing_stylus_compiler", None)
   if compiler is None:
     compiler = context.webwing_stylus_compiler = Stylus(plugins={ "nib": {} })
